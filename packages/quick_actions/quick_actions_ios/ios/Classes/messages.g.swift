@@ -13,7 +13,8 @@ import FlutterMacOS
 #error("Unsupported platform.")
 #endif
 
-extension FlutterError: Error {}
+extension FlutterError: Swift.Error {}
+
 
 private func isNullish(_ value: Any?) -> Bool {
   return value is NSNull || value == nil
@@ -51,17 +52,21 @@ struct ShortcutItemMessage {
   var type: String
   /// Localized title of the item.
   var localizedTitle: String
+  /// Localized subtitle of the item.
+  var localizedSubtitle: String? = nil
   /// Name of native resource to be displayed as the icon for this item.
   var icon: String? = nil
 
   static func fromList(_ list: [Any?]) -> ShortcutItemMessage? {
     let type = list[0] as! String
     let localizedTitle = list[1] as! String
-    let icon: String? = nilOrValue(list[2])
+    let localizedSubtitle: String? = nilOrValue(list[2])
+    let icon: String? = nilOrValue(list[3])
 
     return ShortcutItemMessage(
       type: type,
       localizedTitle: localizedTitle,
+      localizedSubtitle: localizedSubtitle,
       icon: icon
     )
   }
@@ -69,6 +74,7 @@ struct ShortcutItemMessage {
     return [
       type,
       localizedTitle,
+      localizedSubtitle,
       icon,
     ]
   }

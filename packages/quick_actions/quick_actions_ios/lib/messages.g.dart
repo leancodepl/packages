@@ -10,9 +10,7 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
-
-List<Object?> wrapResponse(
-    {Object? result, PlatformException? error, bool empty = false}) {
+List<Object?> wrapResponse({Object? result, PlatformException? error, bool empty = false}) {
   if (empty) {
     return <Object?>[];
   }
@@ -27,6 +25,7 @@ class ShortcutItemMessage {
   ShortcutItemMessage({
     required this.type,
     required this.localizedTitle,
+    this.localizedSubtitle,
     this.icon,
   });
 
@@ -36,6 +35,9 @@ class ShortcutItemMessage {
   /// Localized title of the item.
   String localizedTitle;
 
+  /// Localized subtitle of the item.
+  String? localizedSubtitle;
+
   /// Name of native resource to be displayed as the icon for this item.
   String? icon;
 
@@ -43,6 +45,7 @@ class ShortcutItemMessage {
     return <Object?>[
       type,
       localizedTitle,
+      localizedSubtitle,
       icon,
     ];
   }
@@ -52,7 +55,8 @@ class ShortcutItemMessage {
     return ShortcutItemMessage(
       type: result[0]! as String,
       localizedTitle: result[1]! as String,
-      icon: result[2] as String?,
+      localizedSubtitle: result[2] as String?,
+      icon: result[3] as String?,
     );
   }
 }
@@ -72,7 +76,7 @@ class _IOSQuickActionsApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return ShortcutItemMessage.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -91,11 +95,9 @@ class IOSQuickActionsApi {
   static const MessageCodec<Object?> codec = _IOSQuickActionsApiCodec();
 
   /// Sets the dynamic shortcuts for the app.
-  Future<void> setShortcutItems(
-      List<ShortcutItemMessage?> arg_itemsList) async {
+  Future<void> setShortcutItems(List<ShortcutItemMessage?> arg_itemsList) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsApi.setShortcutItems',
-        codec,
+        'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsApi.setShortcutItems', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_itemsList]) as List<Object?>?;
@@ -118,10 +120,10 @@ class IOSQuickActionsApi {
   /// Removes all dynamic shortcuts.
   Future<void> clearShortcutItems() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsApi.clearShortcutItems',
-        codec,
+        'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsApi.clearShortcutItems', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -145,19 +147,17 @@ abstract class IOSQuickActionsFlutterApi {
   /// Sends a string representing a shortcut from the native platform to the app.
   void launchAction(String action);
 
-  static void setup(IOSQuickActionsFlutterApi? api,
-      {BinaryMessenger? binaryMessenger}) {
+  static void setup(IOSQuickActionsFlutterApi? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsFlutterApi.launchAction',
-          codec,
+          'dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsFlutterApi.launchAction', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-              'Argument for dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsFlutterApi.launchAction was null.');
+          'Argument for dev.flutter.pigeon.quick_actions_ios.IOSQuickActionsFlutterApi.launchAction was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_action = (args[0] as String?);
           assert(arg_action != null,
@@ -167,9 +167,8 @@ abstract class IOSQuickActionsFlutterApi {
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
-            return wrapResponse(
-                error: PlatformException(code: 'error', message: e.toString()));
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }

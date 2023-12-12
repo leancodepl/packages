@@ -39,8 +39,12 @@ void main() {
 
   test('clearShortCutItems', () {
     quickActions.initialize((String type) {});
-    const ShortcutItem item =
-        ShortcutItem(type: 'test', localizedTitle: 'title', icon: 'icon.svg');
+    const ShortcutItem item = ShortcutItem(
+      type: 'test',
+      localizedTitle: 'title',
+      localizedSubtitle: 'subtitle',
+      icon: 'icon.svg',
+    );
     quickActions.setShortcutItems(<ShortcutItem>[item]);
     quickActions.clearShortcutItems();
 
@@ -50,13 +54,19 @@ void main() {
   test('Shortcut item can be constructed', () {
     const String type = 'type';
     const String localizedTitle = 'title';
+    const String localizedSubtitle = 'subtitle';
     const String icon = 'foo';
 
-    const ShortcutItem item =
-        ShortcutItem(type: type, localizedTitle: localizedTitle, icon: icon);
+    const ShortcutItem item = ShortcutItem(
+      type: type,
+      localizedTitle: localizedTitle,
+      localizedSubtitle: localizedSubtitle,
+      icon: icon,
+    );
 
     expect(item.type, type);
     expect(item.localizedTitle, localizedTitle);
+    expect(item.localizedSubtitle, localizedSubtitle);
     expect(item.icon, icon);
   });
 }
@@ -85,6 +95,7 @@ ShortcutItem shortcutItemMessageToShortcutItem(ShortcutItemMessage item) {
   return ShortcutItem(
     type: item.type,
     localizedTitle: item.localizedTitle,
+    localizedSubtitle: item.localizedSubtitle,
     icon: item.icon,
   );
 }
