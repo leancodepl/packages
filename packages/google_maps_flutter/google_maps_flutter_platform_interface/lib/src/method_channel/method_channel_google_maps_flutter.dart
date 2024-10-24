@@ -172,6 +172,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<ClusterTapEvent>();
   }
 
+  @override
+  Stream<GroundOverlayTapEvent> onGroundOverlayTap({required int mapId}) {
+    return _events(mapId).whereType<GroundOverlayTapEvent>();
+  }
+
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
@@ -294,6 +299,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
             bounds: bounds,
           ),
         ));
+      case 'groundOverlay#onTap':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        final GroundOverlayId groundOverlayId =
+            GroundOverlayId(arguments['groundOverlayId']! as String);
+        _mapEventStreamController
+            .add(GroundOverlayTapEvent(mapId, groundOverlayId));
       default:
         throw MissingPluginException();
     }
@@ -391,6 +402,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<void>(
       'tileOverlays#update',
       updates.toJson(),
+    );
+  }
+
+  @override
+  Future<void> updateGroundOverlays(
+    GroundOverlayUpdates groundOverlayUpdates, {
+    required int mapId,
+  }) {
+    return channel(mapId).invokeMethod<void>(
+      'groundOverlays#update',
+      groundOverlayUpdates.toJson(),
     );
   }
 
@@ -644,6 +666,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<ClusterManager> clusterManagers = const <ClusterManager>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
@@ -655,12 +678,14 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           initialCameraPosition: initialCameraPosition,
           textDirection: textDirection),
       mapObjects: MapObjects(
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-          circles: circles,
-          clusterManagers: clusterManagers,
-          tileOverlays: tileOverlays),
+        markers: markers,
+        polygons: polygons,
+        polylines: polylines,
+        circles: circles,
+        clusterManagers: clusterManagers,
+        tileOverlays: tileOverlays,
+        groundOverlays: groundOverlays,
+      ),
       mapOptions: mapOptions,
     );
   }
@@ -675,6 +700,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<ClusterManager> clusterManagers = const <ClusterManager>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
@@ -689,6 +715,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       polylines: polylines,
       circles: circles,
       tileOverlays: tileOverlays,
+      groundOverlays: groundOverlays,
       clusterManagers: clusterManagers,
       gestureRecognizers: gestureRecognizers,
       mapOptions: mapOptions,

@@ -22,6 +22,7 @@ class MapObjects {
     this.circles = const <Circle>{},
     this.heatmaps = const <Heatmap>{},
     this.tileOverlays = const <TileOverlay>{},
+    this.groundOverlays = const <GroundOverlay>{},
     this.clusterManagers = const <ClusterManager>{},
   });
 
@@ -31,5 +32,6 @@ class MapObjects {
   final Set<Circle> circles;
   final Set<Heatmap> heatmaps;
   final Set<TileOverlay> tileOverlays;
+  final Set<GroundOverlay> groundOverlays;
   final Set<ClusterManager> clusterManagers;
 }
