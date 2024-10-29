@@ -124,6 +124,7 @@
 @property(nonatomic, strong) FLTMarkersController *markersController;
 @property(nonatomic, strong) FLTPolygonsController *polygonsController;
 @property(nonatomic, strong) FLTPolylinesController *polylinesController;
+@property(nonatomic, strong) FLTGroundOverlaysController *groundOverlaysController;
 @property(nonatomic, strong) FLTCirclesController *circlesController;
 
 // The controller that handles heatmaps
@@ -196,6 +197,10 @@
     _polylinesController = [[FLTPolylinesController alloc] initWithMapView:_mapView
                                                            callbackHandler:_dartCallbackHandler
                                                                  registrar:registrar];
+    _groundOverlaysController =
+        [[FLTGroundOverlaysController alloc] initWithMapView:_mapView
+                                             callbackHandler:_dartCallbackHandler
+                                                   registrar:registrar];
     _circlesController = [[FLTCirclesController alloc] initWithMapView:_mapView
                                                        callbackHandler:_dartCallbackHandler
                                                              registrar:registrar];
@@ -211,6 +216,7 @@
     [_circlesController addCircles:creationParameters.initialCircles];
     [_heatmapsController addHeatmaps:creationParameters.initialHeatmaps];
     [_tileOverlaysController addTileOverlays:creationParameters.initialTileOverlays];
+    [_groundOverlaysController addGroundOverlays:creationParameters.initialGroundOverlays];
 
     // Invoke clustering after markers are added.
     [_clusterManagersController invokeClusteringForEachClusterManager];
@@ -423,6 +429,8 @@
     [self.polygonsController didTapPolygonWithIdentifier:overlayId];
   } else if ([self.circlesController hasCircleWithIdentifier:overlayId]) {
     [self.circlesController didTapCircleWithIdentifier:overlayId];
+  } else if ([self.groundOverlaysController hasGroundOverlayWithIdentifier:overlayId]) {
+    [self.groundOverlaysController didTapGroundOverlayWithIdentifier:overlayId];
   }
 }
 
@@ -600,6 +608,15 @@
   [self.controller.tileOverlaysController addTileOverlays:toAdd];
   [self.controller.tileOverlaysController changeTileOverlays:toChange];
   [self.controller.tileOverlaysController removeTileOverlayWithIdentifiers:idsToRemove];
+}
+
+- (void)updateGroundOverlaysByAdding:(nonnull NSArray<FGMPlatformGroundOverlay *> *)toAdd
+                            changing:(nonnull NSArray<FGMPlatformGroundOverlay *> *)toChange
+                            removing:(nonnull NSArray<NSString *> *)idsToRemove
+                               error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
+  [self.controller.groundOverlaysController addGroundOverlays:toAdd];
+  [self.controller.groundOverlaysController changeGroundOverlays:toChange];
+  [self.controller.groundOverlaysController removeGroundOverlayWithIdentifiers:idsToRemove];
 }
 
 - (nullable FGMPlatformLatLng *)

@@ -87,6 +87,7 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapBitmapScaling) {
 @class FGMPlatformPatternItem;
 @class FGMPlatformTile;
 @class FGMPlatformTileOverlay;
+@class FGMPlatformGroundOverlay;
 @class FGMPlatformEdgeInsets;
 @class FGMPlatformLatLng;
 @class FGMPlatformLatLngBounds;
@@ -391,6 +392,22 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapBitmapScaling) {
 @property(nonatomic, assign) NSInteger zIndex;
 @property(nonatomic, assign) BOOL visible;
 @property(nonatomic, assign) NSInteger tileSize;
++ (instancetype)makeWithJson:(id)json;
+/// The tile overlay data, as JSON. This should only be set from
+/// TileOverlay.toJson, and the native code must interpret it according to the
+/// internal implementation details of that method.
+@property(nonatomic, strong) id json;
+@end
+
+/// Pigeon equivalent of the GroundOverlay class.
+@interface FGMPlatformGroundOverlay : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithJson:(id)json;
+/// The tile overlay data, as JSON. This should only be set from
+/// GroundOverlay.toJson, and the native code must interpret it according to the
+/// internal implementation details of that method.
+@property(nonatomic, strong) id json;
 @end
 
 /// Pigeon equivalent of Flutter's EdgeInsets.
@@ -445,6 +462,7 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapBitmapScaling) {
                  initialPolylines:(NSArray<FGMPlatformPolyline *> *)initialPolylines
                   initialHeatmaps:(NSArray<FGMPlatformHeatmap *> *)initialHeatmaps
               initialTileOverlays:(NSArray<FGMPlatformTileOverlay *> *)initialTileOverlays
+            initialGroundOverlays:(NSArray<FGMPlatformGroundOverlay *> *)initialGroundOverlays
            initialClusterManagers:(NSArray<FGMPlatformClusterManager *> *)initialClusterManagers;
 @property(nonatomic, strong) FGMPlatformCameraPosition *initialCameraPosition;
 @property(nonatomic, strong) FGMPlatformMapConfiguration *mapConfiguration;
@@ -454,6 +472,7 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapBitmapScaling) {
 @property(nonatomic, copy) NSArray<FGMPlatformPolyline *> *initialPolylines;
 @property(nonatomic, copy) NSArray<FGMPlatformHeatmap *> *initialHeatmaps;
 @property(nonatomic, copy) NSArray<FGMPlatformTileOverlay *> *initialTileOverlays;
+@property(nonatomic, copy) NSArray<FGMPlatformGroundOverlay *> *initialGroundOverlays;
 @property(nonatomic, copy) NSArray<FGMPlatformClusterManager *> *initialClusterManagers;
 @end
 
@@ -675,6 +694,11 @@ NSObject<FlutterMessageCodec> *FGMGetMessagesCodec(void);
                           changing:(NSArray<FGMPlatformTileOverlay *> *)toChange
                           removing:(NSArray<NSString *> *)idsToRemove
                              error:(FlutterError *_Nullable *_Nonnull)error;
+/// Updates the set of ground overlays on the map.
+- (void)updateGroundOverlaysByAdding:(NSArray<FGMPlatformGroundOverlay *> *)toAdd
+                            changing:(NSArray<FGMPlatformGroundOverlay *> *)toChange
+                            removing:(NSArray<NSString *> *)idsToRemove
+                               error:(FlutterError *_Nullable *_Nonnull)error;
 /// Gets the screen coordinate for the given map location.
 ///
 /// @return `nil` only when `error != nil`.
@@ -788,6 +812,9 @@ extern void SetUpFGMMapsApiWithSuffix(id<FlutterBinaryMessenger> binaryMessenger
 /// Called when a polyline is tapped.
 - (void)didTapPolylineWithIdentifier:(NSString *)polylineId
                           completion:(void (^)(FlutterError *_Nullable))completion;
+/// Called when a ground overlay is tapped.
+- (void)didTapGroundOverlayWithIdentifier:(NSString *)groundOverlayId
+                               completion:(void (^)(FlutterError *_Nullable))completion;
 /// Called to get data for a map tile.
 - (void)tileWithOverlayIdentifier:(NSString *)tileOverlayId
                          location:(FGMPlatformPoint *)location

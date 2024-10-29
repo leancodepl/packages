@@ -191,6 +191,11 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Stream<GroundOverlayTapEvent> onGroundOverlayTap({required int mapId}) {
+    return _events(mapId).whereType<GroundOverlayTapEvent>();
+  }
+
+  @override
   Stream<MapTapEvent> onTap({required int mapId}) {
     return _events(mapId).whereType<MapTapEvent>();
   }
@@ -469,6 +474,9 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
       initialClusterManagers: mapObjects.clusterManagers
           .map(_platformClusterManagerFromClusterManager)
           .toList(),
+      initialGroundOverlays: mapObjects.groundOverlays
+          .map(_platformGroundOverlayFromGroundOverlay)
+          .toList(),
     );
 
     return UiKitView(
@@ -509,6 +517,7 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
@@ -519,11 +528,13 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
           initialCameraPosition: initialCameraPosition,
           textDirection: textDirection),
       mapObjects: MapObjects(
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-          circles: circles,
-          tileOverlays: tileOverlays),
+        markers: markers,
+        polygons: polygons,
+        polylines: polylines,
+        circles: circles,
+        tileOverlays: tileOverlays,
+        groundOverlays: groundOverlays,
+      ),
       mapConfiguration: _platformMapConfigurationFromOptionsJson(mapOptions),
     );
   }
@@ -538,6 +549,7 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
     Set<Polyline> polylines = const <Polyline>{},
     Set<Circle> circles = const <Circle>{},
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
@@ -551,6 +563,7 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
       polylines: polylines,
       circles: circles,
       tileOverlays: tileOverlays,
+      groundOverlays: groundOverlays,
       gestureRecognizers: gestureRecognizers,
       mapOptions: mapOptions,
     );
@@ -816,6 +829,11 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
             'Unrecognized type of bitmap ${bitmap.runtimeType}', 'bitmap');
     }
   }
+
+  static PlatformGroundOverlay _platformGroundOverlayFromGroundOverlay(
+      GroundOverlay groundOverlay) {
+    return PlatformGroundOverlay(json: groundOverlay.toJson());
+  }
 }
 
 /// Callback handler for map events from the platform host.
@@ -946,6 +964,18 @@ class HostMapMessageHandler implements MapsCallbackApi {
   void onTap(PlatformLatLng position) {
     streamController
         .add(MapTapEvent(mapId, _latLngFromPlatformLatLng(position)));
+  }
+
+  @override
+  void onGroundOverlayTap(String groundOverlayId) {
+    streamController.add(
+      GroundOverlayTapEvent(
+        mapId,
+        GroundOverlayId(
+          groundOverlayId,
+        ),
+      ),
+    );
   }
 }
 
