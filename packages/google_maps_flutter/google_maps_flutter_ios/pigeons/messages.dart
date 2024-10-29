@@ -154,6 +154,17 @@ class PlatformTileOverlay {
   final Object json;
 }
 
+/// Pigeon equivalent of the GroundOverlay class.
+class PlatformGroundOverlay {
+  PlatformGroundOverlay(this.json);
+
+  /// The tile overlay data, as JSON. This should only be set from
+  /// GroundOverlay.toJson, and the native code must interpret it according to the
+  /// internal implementation details of that method.
+  // TODO(pdenert): Replace this with structured data.
+  final Object json;
+}
+
 /// Pigeon equivalent of Flutter's EdgeInsets.
 class PlatformEdgeInsets {
   PlatformEdgeInsets({
@@ -206,6 +217,7 @@ class PlatformMapViewCreationParams {
     required this.initialPolylines,
     required this.initialHeatmaps,
     required this.initialTileOverlays,
+    required this.initialGroundOverlays,
     required this.initialClusterManagers,
   });
 
@@ -217,6 +229,7 @@ class PlatformMapViewCreationParams {
   final List<PlatformPolyline> initialPolylines;
   final List<PlatformHeatmap> initialHeatmaps;
   final List<PlatformTileOverlay> initialTileOverlays;
+  final List<PlatformGroundOverlay> initialGroundOverlays;
   final List<PlatformClusterManager> initialClusterManagers;
 }
 
@@ -342,6 +355,11 @@ abstract class MapsApi {
   void updateTileOverlays(List<PlatformTileOverlay> toAdd,
       List<PlatformTileOverlay> toChange, List<String> idsToRemove);
 
+  /// Updates the set of ground overlays on the map.
+  @ObjCSelector('updateGroundOverlaysByAdding:changing:removing:')
+  void updateGroundOverlays(List<PlatformGroundOverlay> toAdd,
+      List<PlatformGroundOverlay> toChange, List<String> idsToRemove);
+
   /// Gets the screen coordinate for the given map location.
   @ObjCSelector('screenCoordinatesForLatLng:')
   PlatformPoint getScreenCoordinate(PlatformLatLng latLng);
@@ -462,6 +480,10 @@ abstract class MapsCallbackApi {
   /// Called when a polyline is tapped.
   @ObjCSelector('didTapPolylineWithIdentifier:')
   void onPolylineTap(String polylineId);
+
+  /// Called when a ground overlay is tapped.
+  @ObjCSelector('didTapGroundOverlayWithIdentifier:')
+  void onGroundOverlayTap(String groundOverlayId);
 
   /// Called to get data for a map tile.
   @async
