@@ -135,6 +135,12 @@ class ExampleGoogleMapController {
         .updateTileOverlays(newTileOverlays: newTileOverlays, mapId: mapId);
   }
 
+  /// Updates ground overlays configuration.
+  Future<void> _updateGroundOverlays(GroundOverlayUpdates newGroundOverlays) {
+    return GoogleMapsFlutterPlatform.instance
+        .updateGroundOverlays(newGroundOverlays, mapId: mapId);
+  }
+
   /// Clears the tile cache so that all tiles will be requested again from the
   /// [TileProvider].
   Future<void> clearTileCache(TileOverlayId tileOverlayId) async {
@@ -248,6 +254,7 @@ class ExampleGoogleMap extends StatefulWidget {
     this.clusterManagers = const <ClusterManager>{},
     this.onCameraMoveStarted,
     this.tileOverlays = const <TileOverlay>{},
+    this.groundOverlays = const <GroundOverlay>{},
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
@@ -318,6 +325,9 @@ class ExampleGoogleMap extends StatefulWidget {
   /// Cluster Managers to be placed for the map.
   final Set<ClusterManager> clusterManagers;
 
+  /// Ground Overlays to be placed on the map.
+  final Set<GroundOverlay> groundOverlays;
+
   /// Called when the camera starts moving.
   final VoidCallback? onCameraMoveStarted;
 
@@ -379,6 +389,8 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   Map<ClusterManagerId, ClusterManager> _clusterManagers =
       <ClusterManagerId, ClusterManager>{};
+  Map<GroundOverlayId, GroundOverlay> _groundOverlays =
+      <GroundOverlayId, GroundOverlay>{};
   late MapConfiguration _mapConfiguration;
 
   @override
@@ -399,6 +411,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
         polylines: widget.polylines,
         circles: widget.circles,
         clusterManagers: widget.clusterManagers,
+        groundOverlays: widget.groundOverlays,
       ),
       mapConfiguration: _mapConfiguration,
     );
@@ -413,6 +426,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
     _polygons = keyByPolygonId(widget.polygons);
     _polylines = keyByPolylineId(widget.polylines);
     _circles = keyByCircleId(widget.circles);
+    _groundOverlays = keyByGroundOverlayId(widget.groundOverlays);
   }
 
   @override
@@ -432,6 +446,7 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
     _updatePolylines();
     _updateCircles();
     _updateTileOverlays();
+    _updateGroundOverlays();
   }
 
   Future<void> _updateOptions() async {
@@ -485,6 +500,17 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
     unawaited(controller._updateTileOverlays(widget.tileOverlays));
   }
 
+  Future<void> _updateGroundOverlays() async {
+    final ExampleGoogleMapController controller = await _controller.future;
+    unawaited(
+      controller._updateGroundOverlays(
+        GroundOverlayUpdates.from(
+            _groundOverlays.values.toSet(), widget.groundOverlays),
+      ),
+    );
+    _groundOverlays = keyByGroundOverlayId(widget.groundOverlays);
+  }
+
   Future<void> onPlatformViewCreated(int id) async {
     final ExampleGoogleMapController controller =
         await ExampleGoogleMapController._init(
@@ -523,6 +549,10 @@ class _ExampleGoogleMapState extends State<ExampleGoogleMap> {
 
   void onCircleTap(CircleId circleId) {
     _circles[circleId]!.onTap?.call();
+  }
+
+  void onGroundOverlayTap(GroundOverlayId groundOverlayId) {
+    _groundOverlays[groundOverlayId]!.onTap?.call();
   }
 
   void onInfoWindowTap(MarkerId markerId) {
