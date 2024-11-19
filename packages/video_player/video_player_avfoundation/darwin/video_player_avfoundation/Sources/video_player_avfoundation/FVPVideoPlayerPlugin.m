@@ -16,6 +16,7 @@
 #import "./include/video_player_avfoundation/messages.g.h"
 
 #if TARGET_OS_IOS
+// Platform views are only supported on iOS as of now.
 #import "./include/video_player_avfoundation/FVPNativeVideoViewFactory.h"
 #endif
 
@@ -63,6 +64,7 @@
   FVPVideoPlayerPlugin *instance = [[FVPVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar publish:instance];
 #if TARGET_OS_IOS
+  // Platform views are only supported on iOS as of now.
   FVPNativeVideoViewFactory *factory =
       [[FVPNativeVideoViewFactory alloc] initWithMessenger:registrar.messenger
                                         playersByTextureId:instance.playersByTextureId];
@@ -98,11 +100,14 @@
 }
 
 - (int64_t)onPlayerSetup:(FVPVideoPlayer *)player frameUpdater:(FVPFrameUpdater *)frameUpdater {
+  // FIXME Rename textureId to playerId, in all other places as well.
   int64_t textureId;
-  if (frameUpdater != nil) {
+  if (frameUpdater) {
     textureId = [self.registry registerTexture:player];
     frameUpdater.textureId = textureId;
   } else {
+    // FIXME Possibly start with a predefined prefix and then increment it to avoid
+    //  collisions withtextureId.
     textureId = arc4random();
   }
 
@@ -115,7 +120,7 @@
   self.playersByTextureId[@(textureId)] = player;
 
   // FIXME Does it need to be here?
-  if (frameUpdater != nil) {
+  if (frameUpdater) {
     // Ensure that the first frame is drawn once available, even if the video isn't played, since
     // the engine is now expecting the texture to be populated.
     // We can safely cast to FVPVideoPlayerTextureApproach since frameUpdater is non-nil.
