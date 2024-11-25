@@ -22,14 +22,15 @@
 @property(readonly, nonatomic, nonnull) AVPlayerItemVideoOutput *videoOutput;
 /// The plugin registrar, to obtain view information from.
 @property(nonatomic, weak, nullable) NSObject<FlutterPluginRegistrar> *registrar;
-/// The CALayer associated with the Flutter view this plugin is associated with, if any.
-@property(nonatomic, readonly, nullable) CALayer *flutterViewLayer;
 /// The Flutter event channel used to communicate with the Flutter engine.
 @property(nonatomic, nonnull) FlutterEventChannel *eventChannel;
 /// The Flutter event sink used to send events to the Flutter engine.
 @property(nonatomic, nonnull) FlutterEventSink eventSink;
 /// The preferred transform for the video. It can be used to handle the rotation of the video.
 @property(nonatomic) CGAffineTransform preferredTransform;
+/// The layer used to display the video content from the AVPlayer. It's responsible for rendering
+/// the video output of the associated AVPlayer.
+@property(nonatomic) AVPlayerLayer *playerLayer;
 /// Indicates whether the video player has been disposed.
 @property(nonatomic, readonly) BOOL disposed;
 /// Indicates whether the video player is currently playing.
@@ -38,22 +39,12 @@
 @property(nonatomic) BOOL isLooping;
 /// Indicates whether the video player has been initialized.
 @property(nonatomic, readonly) BOOL isInitialized;
-/// The updater that drives callbacks to the engine to indicate that a new frame is ready.
-@property(nonatomic, nullable) FVPFrameUpdater *frameUpdater;
-/// The display link that drives frameUpdater.
-@property(nonatomic, nullable) FVPDisplayLink *displayLink;
-/// Whether a new frame needs to be provided to the engine regardless of the current play/pause
-/// state (e.g., after a seek while paused). If YES, the display link should continue to run until
-/// the next frame is successfully provided.
-@property(nonatomic, assign) BOOL waitingForFrame;
 
 NS_ASSUME_NONNULL_BEGIN
 
 /// Initializes a new instance of FVPVideoPlayer with the given URL, frame updater, display link,
 /// HTTP headers, AV factory, and registrar.
 - (instancetype)initWithURL:(NSURL *)url
-               frameUpdater:(FVPFrameUpdater *)frameUpdater
-                displayLink:(FVPDisplayLink *)displayLink
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers
                   avFactory:(id<FVPAVFactory>)avFactory
                   registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
@@ -61,16 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// Initializes a new instance of FVPVideoPlayer with the given AVPlayerItem, frame updater, display
 /// link, AV factory, and registrar.
 - (instancetype)initWithPlayerItem:(AVPlayerItem *)item
-                      frameUpdater:(FVPFrameUpdater *)frameUpdater
-                       displayLink:(FVPDisplayLink *)displayLink
                          avFactory:(id<FVPAVFactory>)avFactory
                          registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 
 /// Initializes a new instance of FVPVideoPlayer with the given asset, frame updater, display link,
 /// AV factory, and registrar.
 - (instancetype)initWithAsset:(NSString *)asset
-                 frameUpdater:(FVPFrameUpdater *)frameUpdater
-                  displayLink:(FVPDisplayLink *)displayLink
                     avFactory:(id<FVPAVFactory>)avFactory
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 
