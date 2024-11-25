@@ -435,14 +435,47 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
 @end
 
 @implementation FGMPlatformGroundOverlay
-+ (instancetype)makeWithJson:(id )json {
++ (instancetype)makeWithGroundOverlayId:(NSString *)groundOverlayId
+    zIndex:(NSInteger )zIndex
+    anchor:(FGMPlatformPoint *)anchor
+    visible:(BOOL )visible
+    bearing:(double )bearing
+    bitmap:(nullable id )bitmap
+    width:(nullable NSNumber *)width
+    height:(nullable NSNumber *)height
+    transparency:(double )transparency
+    clickable:(BOOL )clickable
+    position:(nullable FGMPlatformLatLng *)position
+    bounds:(nullable FGMPlatformLatLngBounds *)bounds {
   FGMPlatformGroundOverlay* pigeonResult = [[FGMPlatformGroundOverlay alloc] init];
-  pigeonResult.json = json;
+  pigeonResult.groundOverlayId = groundOverlayId;
+  pigeonResult.zIndex = zIndex;
+  pigeonResult.anchor = anchor;
+  pigeonResult.visible = visible;
+  pigeonResult.bearing = bearing;
+  pigeonResult.bitmap = bitmap;
+  pigeonResult.width = width;
+  pigeonResult.height = height;
+  pigeonResult.transparency = transparency;
+  pigeonResult.clickable = clickable;
+  pigeonResult.position = position;
+  pigeonResult.bounds = bounds;
   return pigeonResult;
 }
 + (FGMPlatformGroundOverlay *)fromList:(NSArray<id> *)list {
   FGMPlatformGroundOverlay *pigeonResult = [[FGMPlatformGroundOverlay alloc] init];
-  pigeonResult.json = GetNullableObjectAtIndex(list, 0);
+  pigeonResult.groundOverlayId = GetNullableObjectAtIndex(list, 0);
+  pigeonResult.zIndex = [GetNullableObjectAtIndex(list, 1) integerValue];
+  pigeonResult.anchor = GetNullableObjectAtIndex(list, 2);
+  pigeonResult.visible = [GetNullableObjectAtIndex(list, 3) boolValue];
+  pigeonResult.bearing = [GetNullableObjectAtIndex(list, 4) doubleValue];
+  pigeonResult.bitmap = GetNullableObjectAtIndex(list, 5);
+  pigeonResult.width = GetNullableObjectAtIndex(list, 6);
+  pigeonResult.height = GetNullableObjectAtIndex(list, 7);
+  pigeonResult.transparency = [GetNullableObjectAtIndex(list, 8) doubleValue];
+  pigeonResult.clickable = [GetNullableObjectAtIndex(list, 9) boolValue];
+  pigeonResult.position = GetNullableObjectAtIndex(list, 10);
+  pigeonResult.bounds = GetNullableObjectAtIndex(list, 11);
   return pigeonResult;
 }
 + (nullable FGMPlatformGroundOverlay *)nullableFromList:(NSArray<id> *)list {
@@ -450,7 +483,18 @@ static id GetNullableObjectAtIndex(NSArray<id> *array, NSInteger key) {
 }
 - (NSArray<id> *)toList {
   return @[
-    self.json ?: [NSNull null],
+    self.groundOverlayId ?: [NSNull null],
+    @(self.zIndex),
+    self.anchor ?: [NSNull null],
+    @(self.visible),
+    @(self.bearing),
+    self.bitmap ?: [NSNull null],
+    self.width ?: [NSNull null],
+    self.height ?: [NSNull null],
+    @(self.transparency),
+    @(self.clickable),
+    self.position ?: [NSNull null],
+    self.bounds ?: [NSNull null],
   ];
 }
 @end

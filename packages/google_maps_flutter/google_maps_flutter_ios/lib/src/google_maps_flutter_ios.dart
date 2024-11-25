@@ -325,6 +325,29 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Future<void> updateGroundOverlays(
+    GroundOverlayUpdates groundOverlayUpdates, {
+    required int mapId,
+  }) async {
+    final List<PlatformGroundOverlay> toAdd = groundOverlayUpdates
+        .groundOverlaysToAdd
+        .map(_platformGroundOverlayFromGroundOverlay)
+        .toList();
+    final List<PlatformGroundOverlay> toChange = groundOverlayUpdates
+        .groundOverlaysToChange
+        .map(_platformGroundOverlayFromGroundOverlay)
+        .toList();
+    final List<String> toRemove = groundOverlayUpdates.groundOverlayIdsToRemove
+        .map((GroundOverlayId id) => id.value)
+        .toList();
+    return _hostApi(mapId).updateGroundOverlays(
+      toAdd,
+      toChange,
+      toRemove,
+    );
+  }
+
+  @override
   Future<void> updateClusterManagers(
     ClusterManagerUpdates clusterManagerUpdates, {
     required int mapId,
@@ -599,6 +622,10 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
         x: coordinate.x.toDouble(), y: coordinate.y.toDouble());
   }
 
+  static PlatformPoint _platformPointFromOffset(Offset offset) {
+    return PlatformPoint(x: offset.dx, y: offset.dy);
+  }
+
   static PlatformCircle _platformCircleFromCircle(Circle circle) {
     return PlatformCircle(json: circle.toJson());
   }
@@ -632,7 +659,22 @@ class GoogleMapsFlutterIOS extends GoogleMapsFlutterPlatform {
 
   static PlatformGroundOverlay _platformGroundOverlayFromGroundOverlay(
       GroundOverlay groundOverlay) {
-    return PlatformGroundOverlay(json: groundOverlay.toJson());
+    return PlatformGroundOverlay(
+      groundOverlayId: groundOverlay.groundOverlayId.value,
+      zIndex: groundOverlay.zIndex,
+      anchor: _platformPointFromOffset(groundOverlay.anchor),
+      visible: groundOverlay.visible,
+      bearing: groundOverlay.bearing,
+      width: groundOverlay.width,
+      height: groundOverlay.height,
+      bitmap: groundOverlay.bitmap?.toJson(),
+      transparency: groundOverlay.opacity,
+      clickable: groundOverlay.clickable,
+      position: groundOverlay.position != null
+          ? _platformLatLngFromLatLng(groundOverlay.position!)
+          : null,
+      bounds: _platformLatLngBoundsFromLatLngBounds(groundOverlay.bounds),
+    );
   }
 }
 

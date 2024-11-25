@@ -179,11 +179,30 @@ typedef NS_ENUM(NSUInteger, FGMPlatformMapType) {
 @interface FGMPlatformGroundOverlay : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithJson:(id )json;
-/// The tile overlay data, as JSON. This should only be set from
-/// GroundOverlay.toJson, and the native code must interpret it according to the
-/// internal implementation details of that method.
-@property(nonatomic, strong) id  json;
++ (instancetype)makeWithGroundOverlayId:(NSString *)groundOverlayId
+    zIndex:(NSInteger )zIndex
+    anchor:(FGMPlatformPoint *)anchor
+    visible:(BOOL )visible
+    bearing:(double )bearing
+    bitmap:(nullable id )bitmap
+    width:(nullable NSNumber *)width
+    height:(nullable NSNumber *)height
+    transparency:(double )transparency
+    clickable:(BOOL )clickable
+    position:(nullable FGMPlatformLatLng *)position
+    bounds:(nullable FGMPlatformLatLngBounds *)bounds;
+@property(nonatomic, copy) NSString * groundOverlayId;
+@property(nonatomic, assign) NSInteger  zIndex;
+@property(nonatomic, strong) FGMPlatformPoint * anchor;
+@property(nonatomic, assign) BOOL  visible;
+@property(nonatomic, assign) double  bearing;
+@property(nonatomic, strong, nullable) id  bitmap;
+@property(nonatomic, strong, nullable) NSNumber * width;
+@property(nonatomic, strong, nullable) NSNumber * height;
+@property(nonatomic, assign) double  transparency;
+@property(nonatomic, assign) BOOL  clickable;
+@property(nonatomic, strong, nullable) FGMPlatformLatLng * position;
+@property(nonatomic, strong, nullable) FGMPlatformLatLngBounds * bounds;
 @end
 
 /// Pigeon equivalent of Flutter's EdgeInsets.
