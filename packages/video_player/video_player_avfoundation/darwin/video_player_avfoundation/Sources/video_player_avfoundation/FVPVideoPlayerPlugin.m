@@ -145,9 +145,10 @@
 
 - (nullable NSNumber *)createWithOptions:(nonnull FVPCreationOptions *)options
                                    error:(FlutterError **)error {
+  BOOL usesTextureApproach = options.viewType.value == FVPPlatformVideoViewTypeTextureView;
   FVPFrameUpdater *frameUpdater;
   FVPDisplayLink *displayLink;
-  if (options.viewType.value == FVPPlatformVideoViewTypeTextureView) {
+  if (usesTextureApproach) {
     frameUpdater = [[FVPFrameUpdater alloc] initWithRegistry:_registry];
     displayLink = [self.displayLinkFactory displayLinkWithRegistrar:_registrar
                                                            callback:^() {
@@ -164,7 +165,7 @@
       assetPath = [_registrar lookupKeyForAsset:options.asset];
     }
     @try {
-      if (options.viewType.value == FVPPlatformVideoViewTypeTextureView) {
+      if (usesTextureApproach) {
         player = [[FVPVideoPlayerTextureApproach alloc] initWithAsset:assetPath
                                                          frameUpdater:frameUpdater
                                                           displayLink:displayLink
@@ -181,7 +182,7 @@
       return nil;
     }
   } else if (options.uri) {
-    if (options.viewType.value == FVPPlatformVideoViewTypeTextureView) {
+    if (usesTextureApproach) {
       player = [[FVPVideoPlayerTextureApproach alloc] initWithURL:[NSURL URLWithString:options.uri]
                                                      frameUpdater:frameUpdater
                                                       displayLink:displayLink

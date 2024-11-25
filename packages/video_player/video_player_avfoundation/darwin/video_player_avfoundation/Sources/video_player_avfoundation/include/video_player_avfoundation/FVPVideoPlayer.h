@@ -30,7 +30,7 @@
 @property(nonatomic) CGAffineTransform preferredTransform;
 /// The layer used to display the video content from the AVPlayer. It's responsible for rendering
 /// the video output of the associated AVPlayer.
-@property(nonatomic) AVPlayerLayer *playerLayer;
+@property(nonatomic, nonnull) AVPlayerLayer *playerLayer;
 /// Indicates whether the video player has been disposed.
 @property(nonatomic, readonly) BOOL disposed;
 /// Indicates whether the video player is currently playing.
@@ -89,8 +89,4 @@ NS_ASSUME_NONNULL_END
 /// Seeks to the specified location in the video and calls the completion handler when done, if one
 /// is supplied.
 - (void)seekTo:(int64_t)location completionHandler:(void (^_Nullable)(BOOL))completionHandler;
-
-/// Tells the player to run its frame updater until it receives a frame, regardless of the
-/// play/pause state.
-- (void)expectFrame;
 @end
