@@ -318,13 +318,33 @@ class PlatformTileOverlay {
 
 /// Pigeon equivalent of the GroundOverlay class.
 class PlatformGroundOverlay {
-  PlatformGroundOverlay(this.json);
+  PlatformGroundOverlay({
+    required this.groundOverlayId,
+    required this.zIndex,
+    required this.anchor,
+    required this.visible,
+    required this.bearing,
+    required this.bitmap,
+    required this.width,
+    required this.height,
+    required this.transparency,
+    required this.clickable,
+    required this.position,
+    required this.bounds,
+  });
 
-  /// The tile overlay data, as JSON. This should only be set from
-  /// GroundOverlay.toJson, and the native code must interpret it according to the
-  /// internal implementation details of that method.
-  // TODO(pdenert): Replace this with structured data.
-  final Object json;
+  final String groundOverlayId;
+  final int zIndex;
+  final PlatformPoint anchor;
+  final bool visible;
+  final double bearing;
+  final Object? bitmap;
+  final double? width;
+  final double? height;
+  final double transparency;
+  final bool clickable;
+  final PlatformLatLng? position;
+  final PlatformLatLngBounds? bounds;
 }
 
 /// Pigeon equivalent of Flutter's EdgeInsets.

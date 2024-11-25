@@ -821,24 +821,76 @@ class PlatformTileOverlay {
 /// Pigeon equivalent of the GroundOverlay class.
 class PlatformGroundOverlay {
   PlatformGroundOverlay({
-    required this.json,
+    required this.groundOverlayId,
+    required this.zIndex,
+    required this.anchor,
+    required this.visible,
+    required this.bearing,
+    this.bitmap,
+    this.width,
+    this.height,
+    required this.transparency,
+    required this.clickable,
+    this.position,
+    this.bounds,
   });
 
-  /// The tile overlay data, as JSON. This should only be set from
-  /// GroundOverlay.toJson, and the native code must interpret it according to the
-  /// internal implementation details of that method.
-  Object json;
+  String groundOverlayId;
+
+  int zIndex;
+
+  PlatformPoint anchor;
+
+  bool visible;
+
+  double bearing;
+
+  Object? bitmap;
+
+  double? width;
+
+  double? height;
+
+  double transparency;
+
+  bool clickable;
+
+  PlatformLatLng? position;
+
+  PlatformLatLngBounds? bounds;
 
   Object encode() {
     return <Object?>[
-      json,
+      groundOverlayId,
+      zIndex,
+      anchor,
+      visible,
+      bearing,
+      bitmap,
+      width,
+      height,
+      transparency,
+      clickable,
+      position,
+      bounds,
     ];
   }
 
   static PlatformGroundOverlay decode(Object result) {
     result as List<Object?>;
     return PlatformGroundOverlay(
-      json: result[0]!,
+      groundOverlayId: result[0]! as String,
+      zIndex: result[1]! as int,
+      anchor: result[2]! as PlatformPoint,
+      visible: result[3]! as bool,
+      bearing: result[4]! as double,
+      bitmap: result[5],
+      width: result[6] as double?,
+      height: result[7] as double?,
+      transparency: result[8]! as double,
+      clickable: result[9]! as bool,
+      position: result[10] as PlatformLatLng?,
+      bounds: result[11] as PlatformLatLngBounds?,
     );
   }
 }

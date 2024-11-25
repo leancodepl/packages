@@ -31,9 +31,11 @@ class GroundOverlayBodyState extends State<GroundOverlayBody> {
   GroundOverlayBodyState();
 
   ExampleGoogleMapController? controller;
-  BitmapDescriptor? _overlayImage;
+  AssetMapBitmap? _overlayImage;
   double _bearing = 0;
-  double _opacity = 1.0;
+  double _opacity = 0.0;
+  final bool _scalingEnabled = true;
+  final bool _mipMapsEnabled = true;
 
   // ignore: use_setters_to_change_properties
   void _onMapCreated(ExampleGoogleMapController controller) {
@@ -51,14 +53,43 @@ class GroundOverlayBodyState extends State<GroundOverlayBody> {
     });
   }
 
-  void _addGroundOverlay() {
-    BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty,
-      'assets/red_square.png',
-    ).then((BitmapDescriptor bitmap) {
-      setState(() {
-        _overlayImage = bitmap;
-      });
+  Future<void> _addGroundOverlay(BuildContext context) async {
+    // Width and height are used only for custom size.
+    final (double? width, double? height) = (null, null);
+
+    AssetMapBitmap assetMapBitmap;
+    if (_mipMapsEnabled) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+
+      assetMapBitmap = await AssetMapBitmap.create(
+        imageConfiguration,
+        'assets/red_square.png',
+        width: width,
+        height: height,
+        bitmapScaling:
+            _scalingEnabled ? MapBitmapScaling.auto : MapBitmapScaling.none,
+      );
+    } else {
+      // Uses hardcoded asset path
+      // This bypasses the asset resolving logic and allows to load the asset
+      // with precise path.
+
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+
+      assetMapBitmap = await AssetMapBitmap.create(
+        imageConfiguration,
+        'assets/red_square.png',
+        width: width,
+        height: height,
+        bitmapScaling:
+            _scalingEnabled ? MapBitmapScaling.auto : MapBitmapScaling.none,
+      );
+    }
+
+    setState(() {
+      _overlayImage = assetMapBitmap;
     });
   }
 
@@ -70,18 +101,23 @@ class GroundOverlayBodyState extends State<GroundOverlayBody> {
           groundOverlayId: const GroundOverlayId('ground_overlay_1'),
           bitmap: _overlayImage,
           position: const LatLng(59.935460, 30.325177),
-          width: 200,
+          width: 2000,
+          height: 1000,
           bearing: _bearing,
           opacity: _opacity,
+          zIndex: 1000,
         ),
-      if (_overlayImage != null)
-        GroundOverlay.fromBounds(
-          LatLngBounds(
-              southwest: const LatLng(59.945460, 30.335177),
-              northeast: const LatLng(59.946460, 30.336177)),
-          groundOverlayId: const GroundOverlayId('ground_overlay_3'),
-          bitmap: _overlayImage,
-        ),
+
+      /// Uncomment to add a ground overlay with bounds
+      // if (_overlayImage != null)
+      //   GroundOverlay.fromBounds(
+      //     LatLngBounds(
+      //         southwest: const LatLng(59, 30), northeast: const LatLng(60, 31)),
+      //     groundOverlayId: const GroundOverlayId('ground_overlay_3'),
+      //     bitmap: _overlayImage,
+      //     opacity: _opacity,
+      //     zIndex: 21,
+      //   ),
     };
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -105,7 +141,7 @@ class GroundOverlayBodyState extends State<GroundOverlayBody> {
         ...<Widget>[
           if (overlays.isEmpty)
             TextButton(
-              onPressed: _addGroundOverlay,
+              onPressed: () => _addGroundOverlay(context),
               child: const Text('Add ground overlay'),
             ),
           if (overlays.isNotEmpty)

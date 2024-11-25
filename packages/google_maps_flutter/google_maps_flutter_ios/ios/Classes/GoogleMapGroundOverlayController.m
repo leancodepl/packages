@@ -95,37 +95,30 @@ static UIImage *ExtractBitmapDescriptor(NSObject<FlutterPluginRegistrar> *regist
 
 @end
 
-static void InterpretGroundOverlayOptions(NSDictionary *data,
+static void InterpretGroundOverlayOptions(FGMPlatformGroundOverlay *groundOverlay,
                                           id<FLTGoogleMapGroundOverlayOptionsSink> sink,
                                           NSObject<FlutterPluginRegistrar> *registrar) {
-  NSNumber *consumeTapEvents = data[@"consumeTapEvents"];
+  BOOL *consumeTapEvents = groundOverlay.clickable;
   if (consumeTapEvents != nil) {
-    [sink setConsumeTapEvents:consumeTapEvents.boolValue];
+    [sink setConsumeTapEvents:consumeTapEvents];
   }
 
-  NSNumber *visible = data[@"visible"];
+  BOOL *visible = groundOverlay.visible;
   if (visible != nil) {
-    [sink setVisible:visible.boolValue];
+    [sink setVisible:visible];
   }
 
-  NSNumber *zIndex = data[@"zIndex"];
-  if (zIndex != nil && zIndex != (id)[NSNull null]) {
-    [sink setZIndex:zIndex.intValue];
-  }
+  NSInteger zIndex = groundOverlay.zIndex;
+  [sink setZIndex:zIndex];
 
-  NSNumber *transparency = data[@"transparency"];
-  if (transparency != nil && transparency != (id)[NSNull null]) {
-    float transparencyFloat = [transparency floatValue];
-    float opacity = 1 - transparencyFloat;
-    [sink setOpacity:opacity];
-  }
+  double transparency = groundOverlay.transparency;
+  float opacity = 1 - transparency;
+  [sink setOpacity:opacity];
 
-  NSNumber *bearing = data[@"bearing"];
-  if (bearing != nil) {
-    [sink setBearing:bearing.floatValue];
-  }
+  double bearing = groundOverlay.bearing;
+  [sink setBearing:bearing];
 
-  NSArray *bitmap = data[@"bitmap"];
+  NSArray *bitmap = groundOverlay.bitmap;
   if (bitmap) {
     UIImage *image = ExtractBitmapDescriptor(registrar, bitmap);
     [sink setBitmapDescriptor:image];
@@ -148,7 +141,24 @@ static UIImage *scaleImage(UIImage *image, NSNumber *scaleParam) {
 static UIImage *ExtractBitmapDescriptor(NSObject<FlutterPluginRegistrar> *registrar,
                                         NSArray *bitmapData) {
   UIImage *image;
-  if ([bitmapData.firstObject isEqualToString:@"fromAsset"]) {
+  NSDictionary *bitmapDict = bitmapData.firstObject;
+  NSDictionary *fromAssetImageDict = bitmapData[1];
+
+  // Handle the fromAssetImage case
+  NSString *assetName = fromAssetImageDict[@"assetName"];
+  NSString *bitmapScaling = fromAssetImageDict[@"bitmapScaling"];
+  NSNumber *imagePixelRatio = fromAssetImageDict[@"imagePixelRatio"];
+  
+  NSLog(@"Asset Name: %@", assetName);
+  NSLog(@"Bitmap Scaling: %@", bitmapScaling);
+  NSLog(@"Image Pixel Ratio: %@", imagePixelRatio);
+
+  image = [UIImage imageNamed:[registrar lookupKeyForAsset:assetName]];
+  // NSNumber *scaleParam = bitmapScaling;
+  // image = scaleImage(image, scaleParam);
+  return image;
+    
+  if ([bitmapData.firstObject isEqualToString:@"asset"]) {
     if (bitmapData.count == 2) {
       image = [UIImage imageNamed:[registrar lookupKeyForAsset:bitmapData[1]]];
     } else {
@@ -219,13 +229,13 @@ static UIImage *ExtractBitmapDescriptor(NSObject<FlutterPluginRegistrar> *regist
 }
 
 - (void)addGroundOverlays:(NSArray<FGMPlatformGroundOverlay *> *)groundOverlaysToAdd {
-  for (NSDictionary *groundOverlay in groundOverlaysToAdd) {
-    UIImage *icon = [FLTGroundOverlaysController getImage:groundOverlay registrar:_registrar];
-    NSString *groundOverlayId = [FLTGroundOverlaysController getGroundOverlayId:groundOverlay];
+  for (FGMPlatformGroundOverlay *groundOverlay in groundOverlaysToAdd) {
+    UIImage *icon = ExtractBitmapDescriptor(_registrar, groundOverlay.bitmap);
+    NSString *groundOverlayId = groundOverlay.groundOverlayId;
 
-    if (groundOverlay[@"bounds"] == nil) {
+    if (groundOverlay.bounds == nil) {
       CLLocationCoordinate2D position =
-          [FLTGoogleMapJSONConversions locationFromLatLong:groundOverlay[@"position"]];
+          CLLocationCoordinate2DMake(groundOverlay.position.latitude, groundOverlay.position.longitude);
       FLTGoogleMapGroundOverlayController *controller =
           [[FLTGoogleMapGroundOverlayController alloc] initGroundOverlayWithPosition:position
                                                                                 icon:icon
@@ -234,7 +244,9 @@ static UIImage *ExtractBitmapDescriptor(NSObject<FlutterPluginRegistrar> *regist
       InterpretGroundOverlayOptions(groundOverlay, controller, _registrar);
       _groundOverlayIdToController[groundOverlayId] = controller;
     } else {
-      GMSCoordinateBounds *bounds = [FLTGroundOverlaysController getBounds:groundOverlay];
+      GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc]
+      initWithCoordinate:CLLocationCoordinate2DMake(groundOverlay.bounds.southwest.latitude, groundOverlay.bounds.southwest.longitude)
+              coordinate:CLLocationCoordinate2DMake(groundOverlay.bounds.northeast.latitude, groundOverlay.bounds.northeast.longitude)];
       FLTGoogleMapGroundOverlayController *controller =
           [[FLTGoogleMapGroundOverlayController alloc] initGroundOverlayWithBounds:bounds
                                                                               icon:icon
@@ -247,8 +259,8 @@ static UIImage *ExtractBitmapDescriptor(NSObject<FlutterPluginRegistrar> *regist
 }
 
 - (void)changeGroundOverlays:(NSArray<FGMPlatformGroundOverlay *> *)groundOverlaysToChange {
-  for (NSDictionary *groundOverlay in groundOverlaysToChange) {
-    NSString *groundOverlayId = [FLTGroundOverlaysController getGroundOverlayId:groundOverlay];
+  for (FGMPlatformGroundOverlay *groundOverlay in groundOverlaysToChange) {
+    NSString *groundOverlayId = groundOverlay.groundOverlayId;
     FLTGoogleMapGroundOverlayController *controller = _groundOverlayIdToController[groundOverlayId];
     if (!controller) {
       continue;
