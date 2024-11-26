@@ -10,14 +10,14 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import "FVPAVFactory.h"
 #import "FVPDisplayLink.h"
 #import "FVPFrameUpdater.h"
-#import "FVPVideoPlayerPlugin_Test.h"
 
 /// FVPVideoPlayer is responsible for managing video playback using AVPlayer.
 /// It provides methods to control playback, adjust volume, handle seeking, and
 /// notify the Flutter engine about new video frames.
-@interface FVPVideoPlayer ()
+@interface FVPVideoPlayer : NSObject <FlutterStreamHandler>
 /// The AVPlayerItemVideoOutput associated with this video player.
 @property(readonly, nonatomic, nonnull) AVPlayerItemVideoOutput *videoOutput;
 /// The plugin registrar, to obtain view information from.
@@ -28,9 +28,13 @@
 @property(nonatomic, nonnull) FlutterEventSink eventSink;
 /// The preferred transform for the video. It can be used to handle the rotation of the video.
 @property(nonatomic) CGAffineTransform preferredTransform;
+/// The AVPlayer instance used for video playback.
+@property(readonly, nonatomic, nonnull) AVPlayer *player;
 /// The layer used to display the video content from the AVPlayer. It's responsible for rendering
 /// the video output of the associated AVPlayer.
 @property(nonatomic, nonnull) AVPlayerLayer *playerLayer;
+/// The current playback position of the video, in milliseconds.
+@property(readonly, nonatomic) int64_t position;
 /// Indicates whether the video player has been disposed.
 @property(nonatomic, readonly) BOOL disposed;
 /// Indicates whether the video player is currently playing.

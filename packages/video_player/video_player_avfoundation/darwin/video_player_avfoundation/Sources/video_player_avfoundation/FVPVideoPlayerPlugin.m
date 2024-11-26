@@ -6,6 +6,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import "./include/video_player_avfoundation/FVPAVFactory.h"
 #import "./include/video_player_avfoundation/FVPDisplayLink.h"
 #import "./include/video_player_avfoundation/FVPFrameUpdater.h"
 #import "./include/video_player_avfoundation/FVPVideoPlayer.h"
@@ -23,19 +24,6 @@
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
 #endif
-
-@interface FVPDefaultAVFactory : NSObject <FVPAVFactory>
-@end
-
-@implementation FVPDefaultAVFactory
-- (AVPlayer *)playerWithPlayerItem:(AVPlayerItem *)playerItem {
-  return [AVPlayer playerWithPlayerItem:playerItem];
-}
-- (AVPlayerItemVideoOutput *)videoOutputWithPixelBufferAttributes:
-    (NSDictionary<NSString *, id> *)attributes {
-  return [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:attributes];
-}
-@end
 
 /// Non-test implementation of the diplay link factory.
 @interface FVPDefaultDisplayLinkFactory : NSObject <FVPDisplayLinkFactory>
@@ -102,8 +90,8 @@
 - (int64_t)onPlayerSetup:(FVPVideoPlayer *)player frameUpdater:(FVPFrameUpdater *)frameUpdater {
   // FIXME Rename textureId to playerId, in all other places as well.
   int64_t textureId;
-  if (frameUpdater) {
-    textureId = [self.registry registerTexture:player];
+  if (frameUpdater && [player isKindOfClass:[FVPVideoPlayerTextureApproach class]]) {
+    textureId = [self.registry registerTexture:(FVPVideoPlayerTextureApproach *)player];
     frameUpdater.textureId = textureId;
   } else {
     // FIXME Possibly start with a predefined prefix and then increment it to avoid
