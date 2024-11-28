@@ -129,7 +129,10 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = MiniController.asset('assets/Butterfly-209.mp4');
+    _controller = MiniController.asset(
+      'assets/Butterfly-209.mp4',
+      viewType: widget.viewType,
+    );
 
     _controller.addListener(() {
       setState(() {});
@@ -189,6 +192,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
     super.initState();
     _controller = MiniController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      viewType: widget.viewType,
     );
 
     _controller.addListener(() {
@@ -254,7 +258,10 @@ class _RtspRemoteVideoState extends State<_RtspRemoteVideo> {
     }
 
     setState(() {
-      _controller = MiniController.network(url);
+      _controller = MiniController.network(
+        url,
+        viewType: widget.viewType,
+      );
     });
 
     _controller!.addListener(() {
