@@ -63,6 +63,7 @@ class CreateMessage {
     this.packageName,
     this.formatHint,
     required this.httpHeaders,
+    this.viewType,
   });
 
   String? asset;
@@ -75,6 +76,8 @@ class CreateMessage {
 
   Map<String, String> httpHeaders;
 
+  PlatformVideoViewType? viewType;
+
   Object encode() {
     return <Object?>[
       asset,
@@ -82,6 +85,7 @@ class CreateMessage {
       packageName,
       formatHint,
       httpHeaders,
+      viewType,
     ];
   }
 
@@ -93,6 +97,7 @@ class CreateMessage {
       packageName: result[2] as String?,
       formatHint: result[3] as String?,
       httpHeaders: (result[4] as Map<Object?, Object?>?)!.cast<String, String>(),
+      viewType: result[5] as PlatformVideoViewType?,
     );
   }
 }

@@ -14,7 +14,7 @@ class NativeViewFactory extends PlatformViewFactory {
   private final LongSparseArray<VideoPlayer> videoPlayers;
 
   NativeViewFactory(LongSparseArray<VideoPlayer> videoPlayers) {
-    super(StandardMessageCodec.INSTANCE);
+    super(Messages.AndroidVideoPlayerApi.getCodec());
     this.videoPlayers = videoPlayers;
   }
 

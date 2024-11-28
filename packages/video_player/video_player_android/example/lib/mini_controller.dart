@@ -422,7 +422,13 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == MiniController.kUninitializedTextureId
         ? Container()
-        : _platform.buildView(_textureId);
+        : _platform.buildViewWithOptions(
+            VideoViewOptions(
+              playerId: _textureId,
+              // FIXME Do not hardcode this
+              viewType: VideoViewType.platformView,
+            ),
+          );
   }
 }
 

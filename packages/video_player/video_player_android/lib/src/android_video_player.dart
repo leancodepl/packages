@@ -60,6 +60,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
+      viewType: _platformVideoViewTypeFromVideoViewType(dataSource.viewType),
     );
 
     return _api.create(message);
@@ -217,4 +218,13 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       Duration(milliseconds: pair[1] as int),
     );
   }
+}
+
+PlatformVideoViewType _platformVideoViewTypeFromVideoViewType(
+  VideoViewType viewType,
+) {
+  return switch (viewType) {
+    VideoViewType.textureView => PlatformVideoViewType.textureView,
+    VideoViewType.platformView => PlatformVideoViewType.platformView,
+  };
 }

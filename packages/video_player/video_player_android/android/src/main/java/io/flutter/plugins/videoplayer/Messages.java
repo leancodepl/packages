@@ -204,6 +204,16 @@ public class Messages {
       this.httpHeaders = setterArg;
     }
 
+    private @Nullable PlatformVideoViewType viewType;
+
+    public @Nullable PlatformVideoViewType getViewType() {
+      return viewType;
+    }
+
+    public void setViewType(@Nullable PlatformVideoViewType setterArg) {
+      this.viewType = setterArg;
+    }
+
     /** Constructor is non-public to enforce null safety; use Builder. */
     CreateMessage() {}
 
@@ -212,12 +222,12 @@ public class Messages {
       if (this == o) { return true; }
       if (o == null || getClass() != o.getClass()) { return false; }
       CreateMessage that = (CreateMessage) o;
-      return Objects.equals(asset, that.asset) && Objects.equals(uri, that.uri) && Objects.equals(packageName, that.packageName) && Objects.equals(formatHint, that.formatHint) && httpHeaders.equals(that.httpHeaders);
+      return Objects.equals(asset, that.asset) && Objects.equals(uri, that.uri) && Objects.equals(packageName, that.packageName) && Objects.equals(formatHint, that.formatHint) && httpHeaders.equals(that.httpHeaders) && Objects.equals(viewType, that.viewType);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(asset, uri, packageName, formatHint, httpHeaders);
+      return Objects.hash(asset, uri, packageName, formatHint, httpHeaders, viewType);
     }
 
     public static final class Builder {
@@ -262,6 +272,14 @@ public class Messages {
         return this;
       }
 
+      private @Nullable PlatformVideoViewType viewType;
+
+      @CanIgnoreReturnValue
+      public @NonNull Builder setViewType(@Nullable PlatformVideoViewType setterArg) {
+        this.viewType = setterArg;
+        return this;
+      }
+
       public @NonNull CreateMessage build() {
         CreateMessage pigeonReturn = new CreateMessage();
         pigeonReturn.setAsset(asset);
@@ -269,18 +287,20 @@ public class Messages {
         pigeonReturn.setPackageName(packageName);
         pigeonReturn.setFormatHint(formatHint);
         pigeonReturn.setHttpHeaders(httpHeaders);
+        pigeonReturn.setViewType(viewType);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<>(5);
+      ArrayList<Object> toListResult = new ArrayList<>(6);
       toListResult.add(asset);
       toListResult.add(uri);
       toListResult.add(packageName);
       toListResult.add(formatHint);
       toListResult.add(httpHeaders);
+      toListResult.add(viewType);
       return toListResult;
     }
 
@@ -296,6 +316,8 @@ public class Messages {
       pigeonResult.setFormatHint((String) formatHint);
       Object httpHeaders = pigeonVar_list.get(4);
       pigeonResult.setHttpHeaders((Map<String, String>) httpHeaders);
+      Object viewType = pigeonVar_list.get(5);
+      pigeonResult.setViewType((PlatformVideoViewType) viewType);
       return pigeonResult;
     }
   }
