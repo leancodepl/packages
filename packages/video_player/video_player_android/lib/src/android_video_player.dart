@@ -4,6 +4,9 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
@@ -144,6 +147,50 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
+  }
+
+  @override
+  Widget buildViewWithOptions(VideoViewOptions options) {
+    final int playerId = options.playerId;
+
+    return switch (options.viewType) {
+      VideoViewType.textureView => Texture(textureId: playerId),
+      VideoViewType.platformView => _buildPlatformView(playerId),
+    };
+  }
+
+  Widget _buildPlatformView(int playerId) {
+    const String viewType = 'plugins.flutter.dev/video_player_android';
+    final PlatformVideoViewCreationParams creationParams =
+        PlatformVideoViewCreationParams(playerId: playerId);
+
+    // FIXME Check if this setup is complete
+
+    return PlatformViewLink(
+      viewType: viewType,
+      surfaceFactory: (
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: viewType,
+          layoutDirection: TextDirection.ltr,
+          creationParams: creationParams,
+          creationParamsCodec: AndroidVideoPlayerApi.pigeonChannelCodec,
+          onFocus: () => params.onFocusChanged(true),
+        )
+          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+          ..create();
+      },
+    );
   }
 
   @override

@@ -1,0 +1,62 @@
+package io.flutter.plugins.videoplayer;
+
+import android.content.Context;
+import android.graphics.SurfaceTexture;
+import android.view.Surface;
+import android.view.TextureView;
+import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.media3.exoplayer.ExoPlayer;
+import io.flutter.plugin.platform.PlatformView;
+
+class NativeView implements PlatformView {
+  @NonNull private final TextureView textureView;
+
+  NativeView(@NonNull Context context, int id, @NonNull ExoPlayer exoPlayer) {
+    textureView = new TextureView(context);
+
+    // Set the Surface for the ExoPlayer
+    textureView.setSurfaceTextureListener(
+        new TextureView.SurfaceTextureListener() {
+          @Override
+          public void onSurfaceTextureAvailable(
+              @NonNull SurfaceTexture surface, int width, int height) {
+            Surface videoSurface = new Surface(surface);
+            exoPlayer.setVideoSurface(videoSurface);
+            exoPlayer.play();
+          }
+
+          @Override
+          public void onSurfaceTextureSizeChanged(
+              @NonNull SurfaceTexture surface, int width, int height) {
+            // FIXME Implement or remove
+          }
+
+          @Override
+          public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface) {
+            exoPlayer.setVideoSurface(null);
+            return true;
+          }
+
+          @Override
+          public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            // FIXME Implement or remove
+          }
+        });
+  }
+
+  @NonNull
+  @Override
+  public View getView() {
+    return textureView;
+  }
+
+  @Override
+  public void dispose() {
+    SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
+    if (surfaceTexture != null) {
+      surfaceTexture.release();
+    }
+    textureView.setSurfaceTextureListener(null);
+  }
+}

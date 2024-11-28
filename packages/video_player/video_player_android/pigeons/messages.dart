@@ -13,6 +13,22 @@ import 'package:pigeon/pigeon.dart';
   ),
   copyrightHeader: 'pigeons/copyright.txt',
 ))
+
+/// Pigeon equivalent of VideoViewType.
+enum PlatformVideoViewType {
+  textureView,
+  platformView,
+}
+
+/// Information passed to the platform view creation.
+class PlatformVideoViewCreationParams {
+  const PlatformVideoViewCreationParams({
+    required this.playerId,
+  });
+
+  final int playerId;
+}
+
 class CreateMessage {
   CreateMessage({required this.httpHeaders});
   String? asset;
