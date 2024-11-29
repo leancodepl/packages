@@ -231,21 +231,25 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
           sourceType: DataSourceType.asset,
           asset: dataSource,
           package: package,
+          viewType: viewType,
         );
       case DataSourceType.network:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.network,
           uri: dataSource,
+          viewType: viewType,
         );
       case DataSourceType.file:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: dataSource,
+          viewType: viewType,
         );
       case DataSourceType.contentUri:
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.contentUri,
           uri: dataSource,
+          viewType: viewType,
         );
     }
 
@@ -257,8 +261,10 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
     void eventListener(VideoEvent event) {
       switch (event.eventType) {
         case VideoEventType.initialized:
+          print('LALA initialized');
           value = value.copyWith(
             duration: event.duration,
+            // FIXME This is important!
             size: event.size,
             isInitialized: event.duration != null,
           );
