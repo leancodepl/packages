@@ -19,15 +19,14 @@ class NativeView implements PlatformView {
   NativeView(@NonNull Context context, int id, @NonNull ExoPlayer exoPlayer) {
     textureView = new TextureView(context);
 
-    // Set the Surface for the ExoPlayer
     textureView.setSurfaceTextureListener(
         new TextureView.SurfaceTextureListener() {
           @Override
           public void onSurfaceTextureAvailable(
               @NonNull SurfaceTexture surface, int width, int height) {
             Surface videoSurface = new Surface(surface);
+            // FIXME The same thing is in VideoPlayer.java. Maybe it is the same surface?
             exoPlayer.setVideoSurface(videoSurface);
-            exoPlayer.play();
           }
 
           @Override
