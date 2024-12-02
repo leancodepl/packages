@@ -9,8 +9,6 @@ import static androidx.media3.common.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
@@ -18,12 +16,11 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.exoplayer.ExoPlayer;
 
-class VideoPlayer  {
+class VideoPlayer {
   @NonNull private final ExoPlayerProvider exoPlayerProvider;
   @NonNull private final MediaItem mediaItem;
   @NonNull private final VideoPlayerCallbacks videoPlayerEvents;
   @NonNull private final VideoPlayerOptions options;
-  @Nullable private ExoPlayerState savedStateDuring;
   @NonNull protected ExoPlayer exoPlayer;
 
   /**
@@ -76,35 +73,21 @@ class VideoPlayer  {
     this.exoPlayer = createVideoPlayer();
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  // TODO(matanlurey): https://github.com/flutter/flutter/issues/155131.
-  @SuppressWarnings({"deprecation", "removal"})
-  public void onSurfaceCreated() {
-    if (savedStateDuring != null) {
-      exoPlayer = createVideoPlayer();
-      savedStateDuring.restore(exoPlayer);
-      savedStateDuring = null;
-    }
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public void onSurfaceDestroyed() {
-    // Intentionally do not call pause/stop here, because the surface has already been released
-    // at this point (see https://github.com/flutter/flutter/issues/156451).
-    savedStateDuring = ExoPlayerState.save(exoPlayer);
-    exoPlayer.release();
-  }
-
-  private ExoPlayer createVideoPlayer() {
+  protected ExoPlayer createVideoPlayer() {
     ExoPlayer exoPlayer = exoPlayerProvider.get();
     exoPlayer.setMediaItem(mediaItem);
     exoPlayer.prepare();
 
-    boolean wasInitialized = savedStateDuring != null;
+    boolean wasInitialized = wasPlayerInitialized();
     exoPlayer.addListener(new ExoPlayerEventListener(exoPlayer, videoPlayerEvents, wasInitialized));
     setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     return exoPlayer;
+  }
+
+  protected boolean wasPlayerInitialized() {
+    // Can be overridden in subclasses.
+    return false;
   }
 
   void sendBufferingUpdate() {
@@ -151,7 +134,9 @@ class VideoPlayer  {
   }
 
   @NonNull
-  ExoPlayer getExoPlayer() { return exoPlayer; }
+  ExoPlayer getExoPlayer() {
+    return exoPlayer;
+  }
 
   void dispose() {
     exoPlayer.release();
