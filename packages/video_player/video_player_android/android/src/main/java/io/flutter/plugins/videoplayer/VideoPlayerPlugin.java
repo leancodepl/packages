@@ -111,7 +111,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
       videoAsset = VideoAsset.fromRemoteUrl(arg.getUri(), streamingFormat, arg.getHttpHeaders());
     }
 
-    Long id;
+    long id;
     VideoPlayer videoPlayer;
     if (arg.getViewType() == Messages.PlatformVideoViewType.PLATFORM_VIEW) {
       id = VideoPlayerPlugin.nextNonTexturePlayerId++;
