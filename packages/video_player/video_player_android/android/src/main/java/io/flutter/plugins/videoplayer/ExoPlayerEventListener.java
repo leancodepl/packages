@@ -11,6 +11,7 @@ import androidx.media3.common.Format;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import java.util.Objects;
 
@@ -68,6 +69,7 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
   }
 
+  @OptIn(markerClass = UnstableApi.class)
   @SuppressWarnings("SuspiciousNameCombination")
   private void sendInitialized() {
     if (isInitialized) {
@@ -76,8 +78,10 @@ final class ExoPlayerEventListener implements Player.Listener {
     isInitialized = true;
     VideoSize videoSize = exoPlayer.getVideoSize();
     int rotationCorrection = 0;
-    int width = videoSize.width;
-    int height = videoSize.height;
+    // FIXME This is 0, 0 for platform view, because there is no surface assigned to the player?
+    //  Is this solution okay?
+    int width = exoPlayer.getVideoFormat().width;
+    int height = exoPlayer.getVideoFormat().height;
     if (width != 0 && height != 0) {
       RotationDegrees reportedRotationCorrection = RotationDegrees.ROTATE_0;
 
@@ -91,7 +95,8 @@ final class ExoPlayerEventListener implements Player.Listener {
           rotationCorrection =
               getRotationCorrectionFromUnappliedRotation(reportedRotationCorrection);
         } catch (IllegalArgumentException e) {
-          // Unapplied rotation other than 0, 90, 180, 270 reported by VideoSize. Because this is unexpected,
+          // Unapplied rotation other than 0, 90, 180, 270 reported by VideoSize. Because this is
+          // unexpected,
           // we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
@@ -112,7 +117,8 @@ final class ExoPlayerEventListener implements Player.Listener {
         try {
           reportedRotationCorrection = RotationDegrees.fromDegrees(rotationCorrection);
         } catch (IllegalArgumentException e) {
-          // Rotation correction other than 0, 90, 180, 270 reported by Format. Because this is unexpected,
+          // Rotation correction other than 0, 90, 180, 270 reported by Format. Because this is
+          // unexpected,
           // we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
@@ -178,7 +184,8 @@ final class ExoPlayerEventListener implements Player.Listener {
   public void onPlayerError(@NonNull final PlaybackException error) {
     setBuffering(false);
     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-      // See https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
+      // See
+      // https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
       exoPlayer.seekToDefaultPosition();
       exoPlayer.prepare();
     } else {
