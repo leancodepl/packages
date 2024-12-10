@@ -10,17 +10,17 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /// FVPFrameUpdater is responsible for notifying the Flutter texture registry
 /// when a new video frame is available.
 @interface FVPFrameUpdater : NSObject
 /// The texture ID associated with the video output.
 @property(nonatomic) int64_t textureId;
-/// The Flutter texture registry used to notify about new frames.
-@property(nonatomic, weak, readonly) NSObject<FlutterTextureRegistry> *registry;
 /// The output that this updater is managing.
 @property(nonatomic, weak) AVPlayerItemVideoOutput *videoOutput;
 /// The last time that has been validated as avaliable according to hasNewPixelBufferForItemTime:.
-@property(nonatomic, assign) CMTime lastKnownAvailableTime;
+@property(readonly, nonatomic, assign) CMTime lastKnownAvailableTime;
 
 /// Initializes a new instance of FVPFrameUpdater with the given Flutter texture registry.
 - (FVPFrameUpdater *)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry;
@@ -29,3 +29,5 @@
 /// and notifies the Flutter texture registry if a new frame is found.
 - (void)displayLinkFired;
 @end
+
+NS_ASSUME_NONNULL_END
