@@ -83,6 +83,11 @@ final class VideoPlayerTextureApproach extends VideoPlayer
     return savedStateDuring != null;
   }
 
+  @Override
+  protected Messages.PlatformVideoViewType getViewType() {
+    return Messages.PlatformVideoViewType.TEXTURE_VIEW;
+  }
+
   void dispose() {
     surfaceProducer.release();
     // TODO(matanlurey): Remove when embedder no longer calls-back once released.

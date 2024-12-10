@@ -79,7 +79,8 @@ class VideoPlayer {
     exoPlayer.prepare();
 
     boolean wasInitialized = wasPlayerInitialized();
-    exoPlayer.addListener(new ExoPlayerEventListener(exoPlayer, videoPlayerEvents, wasInitialized));
+    exoPlayer.addListener(
+        new ExoPlayerEventListener(exoPlayer, videoPlayerEvents, wasInitialized, getViewType()));
     setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     return exoPlayer;
@@ -88,6 +89,10 @@ class VideoPlayer {
   protected boolean wasPlayerInitialized() {
     // Can be overridden in subclasses.
     return false;
+  }
+
+  protected Messages.PlatformVideoViewType getViewType() {
+    return Messages.PlatformVideoViewType.PLATFORM_VIEW;
   }
 
   void sendBufferingUpdate() {

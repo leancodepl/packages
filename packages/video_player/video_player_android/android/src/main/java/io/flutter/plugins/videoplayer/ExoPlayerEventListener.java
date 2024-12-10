@@ -20,6 +20,7 @@ final class ExoPlayerEventListener implements Player.Listener {
   private final VideoPlayerCallbacks events;
   private boolean isBuffering = false;
   private boolean isInitialized;
+  private Messages.PlatformVideoViewType viewType;
 
   private enum RotationDegrees {
     ROTATE_0(0),
@@ -48,13 +49,18 @@ final class ExoPlayerEventListener implements Player.Listener {
   }
 
   ExoPlayerEventListener(ExoPlayer exoPlayer, VideoPlayerCallbacks events) {
-    this(exoPlayer, events, false);
+    this(exoPlayer, events, false, Messages.PlatformVideoViewType.TEXTURE_VIEW);
   }
 
-  ExoPlayerEventListener(ExoPlayer exoPlayer, VideoPlayerCallbacks events, boolean initialized) {
+  ExoPlayerEventListener(
+      ExoPlayer exoPlayer,
+      VideoPlayerCallbacks events,
+      boolean initialized,
+      Messages.PlatformVideoViewType viewType) {
     this.exoPlayer = exoPlayer;
     this.events = events;
     this.isInitialized = initialized;
+    this.viewType = viewType;
   }
 
   private void setBuffering(boolean buffering) {
@@ -77,11 +83,18 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
     isInitialized = true;
     VideoSize videoSize = exoPlayer.getVideoSize();
+    Format videoFormat = exoPlayer.getVideoFormat();
     int rotationCorrection = 0;
-    // FIXME This is 0, 0 for platform view, because there is no surface assigned to the player?
-    //  Is this solution okay?
-    int width = exoPlayer.getVideoFormat().width;
-    int height = exoPlayer.getVideoFormat().height;
+    // FIXME Is this solution okay?
+    int width =
+        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
+            ? videoSize.width
+            : videoFormat.width;
+    int height =
+        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
+            ? videoSize.height
+            : videoFormat.height;
+
     if (width != 0 && height != 0) {
       RotationDegrees reportedRotationCorrection = RotationDegrees.ROTATE_0;
 
@@ -127,8 +140,10 @@ final class ExoPlayerEventListener implements Player.Listener {
 
       // Switch the width/height if video was taken in portrait mode and a rotation
       // correction was detected.
-      if (reportedRotationCorrection == RotationDegrees.ROTATE_90
-          || reportedRotationCorrection == RotationDegrees.ROTATE_270) {
+      // FIXME Describe why needed only for texture view
+      if (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW
+          && (reportedRotationCorrection == RotationDegrees.ROTATE_90
+              || reportedRotationCorrection == RotationDegrees.ROTATE_270)) {
         width = videoSize.height;
         height = videoSize.width;
       }
