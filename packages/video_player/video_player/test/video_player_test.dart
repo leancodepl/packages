@@ -47,6 +47,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<Duration> get position async => value.position;
 
   @override
+  VideoViewType get viewType => VideoViewType.textureView;
+
+  @override
   Future<void> seekTo(Duration moment) async {}
 
   @override
@@ -471,6 +474,16 @@ void main() {
         fakeVideoPlayerPlatform.forceInitError = false;
         await controller.initialize();
         expect(controller.value.hasError, equals(false));
+      });
+
+      test('uses passed view type', () async {
+        final VideoPlayerController controller = VideoPlayerController.file(
+            File('a.avi'),
+            viewType: VideoViewType.platformView);
+        await controller.initialize();
+
+        expect(fakeVideoPlayerPlatform.dataSources[0].viewType,
+            VideoViewType.platformView);
       });
     });
 

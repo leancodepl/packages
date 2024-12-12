@@ -11,6 +11,7 @@ import androidx.media3.common.Format;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ final class ExoPlayerEventListener implements Player.Listener {
   private final VideoPlayerCallbacks events;
   private boolean isBuffering = false;
   private boolean isInitialized;
+  private Messages.PlatformVideoViewType viewType;
 
   private enum RotationDegrees {
     ROTATE_0(0),
@@ -47,13 +49,18 @@ final class ExoPlayerEventListener implements Player.Listener {
   }
 
   ExoPlayerEventListener(ExoPlayer exoPlayer, VideoPlayerCallbacks events) {
-    this(exoPlayer, events, false);
+    this(exoPlayer, events, false, Messages.PlatformVideoViewType.TEXTURE_VIEW);
   }
 
-  ExoPlayerEventListener(ExoPlayer exoPlayer, VideoPlayerCallbacks events, boolean initialized) {
+  ExoPlayerEventListener(
+      ExoPlayer exoPlayer,
+      VideoPlayerCallbacks events,
+      boolean initialized,
+      Messages.PlatformVideoViewType viewType) {
     this.exoPlayer = exoPlayer;
     this.events = events;
     this.isInitialized = initialized;
+    this.viewType = viewType;
   }
 
   private void setBuffering(boolean buffering) {
@@ -68,6 +75,7 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
   }
 
+  @OptIn(markerClass = UnstableApi.class)
   @SuppressWarnings("SuspiciousNameCombination")
   private void sendInitialized() {
     if (isInitialized) {
@@ -75,9 +83,18 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
     isInitialized = true;
     VideoSize videoSize = exoPlayer.getVideoSize();
+    Format videoFormat = exoPlayer.getVideoFormat();
     int rotationCorrection = 0;
-    int width = videoSize.width;
-    int height = videoSize.height;
+    // FIXME Is this solution okay?
+    int width =
+        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
+            ? videoSize.width
+            : videoFormat.width;
+    int height =
+        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
+            ? videoSize.height
+            : videoFormat.height;
+
     if (width != 0 && height != 0) {
       RotationDegrees reportedRotationCorrection = RotationDegrees.ROTATE_0;
 
@@ -91,7 +108,8 @@ final class ExoPlayerEventListener implements Player.Listener {
           rotationCorrection =
               getRotationCorrectionFromUnappliedRotation(reportedRotationCorrection);
         } catch (IllegalArgumentException e) {
-          // Unapplied rotation other than 0, 90, 180, 270 reported by VideoSize. Because this is unexpected,
+          // Unapplied rotation other than 0, 90, 180, 270 reported by VideoSize. Because this is
+          // unexpected,
           // we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
@@ -112,7 +130,8 @@ final class ExoPlayerEventListener implements Player.Listener {
         try {
           reportedRotationCorrection = RotationDegrees.fromDegrees(rotationCorrection);
         } catch (IllegalArgumentException e) {
-          // Rotation correction other than 0, 90, 180, 270 reported by Format. Because this is unexpected,
+          // Rotation correction other than 0, 90, 180, 270 reported by Format. Because this is
+          // unexpected,
           // we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
@@ -121,8 +140,10 @@ final class ExoPlayerEventListener implements Player.Listener {
 
       // Switch the width/height if video was taken in portrait mode and a rotation
       // correction was detected.
-      if (reportedRotationCorrection == RotationDegrees.ROTATE_90
-          || reportedRotationCorrection == RotationDegrees.ROTATE_270) {
+      // FIXME Describe why needed only for texture view
+      if (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW
+          && (reportedRotationCorrection == RotationDegrees.ROTATE_90
+              || reportedRotationCorrection == RotationDegrees.ROTATE_270)) {
         width = videoSize.height;
         height = videoSize.width;
       }
@@ -178,7 +199,8 @@ final class ExoPlayerEventListener implements Player.Listener {
   public void onPlayerError(@NonNull final PlaybackException error) {
     setBuffering(false);
     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-      // See https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
+      // See
+      // https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
       exoPlayer.seekToDefaultPosition();
       exoPlayer.prepare();
     } else {
