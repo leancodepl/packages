@@ -93,7 +93,7 @@ final class VideoPlayerTextureApproach extends VideoPlayer
   }
 
   void dispose() {
-    // Super must be called first to ensure the player is released first.
+    // Super must be called first to ensure the player is released before the surface.
     super.dispose();
 
     surfaceProducer.release();

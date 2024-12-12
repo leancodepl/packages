@@ -44,7 +44,7 @@ public final class ExoPlayerEventListenerTest {
 
   @Before
   public void setUp() {
-    eventListener = new ExoPlayerEventListener(mockExoPlayer, mockCallbacks);
+    eventListener = new ExoPlayerEventListener(mockExoPlayer, mockCallbacks, Messages.PlatformVideoViewType.TEXTURE_VIEW);
   }
 
   @Test

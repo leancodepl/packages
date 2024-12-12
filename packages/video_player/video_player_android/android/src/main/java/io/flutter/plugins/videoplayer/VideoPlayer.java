@@ -78,9 +78,9 @@ class VideoPlayer {
     exoPlayer.setMediaItem(mediaItem);
     exoPlayer.prepare();
 
-    boolean wasInitialized = wasPlayerInitialized();
     exoPlayer.addListener(
-        new ExoPlayerEventListener(exoPlayer, videoPlayerEvents, wasInitialized, getViewType()));
+        new ExoPlayerEventListener(
+            exoPlayer, videoPlayerEvents, wasPlayerInitialized(), getViewType()));
     setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     return exoPlayer;

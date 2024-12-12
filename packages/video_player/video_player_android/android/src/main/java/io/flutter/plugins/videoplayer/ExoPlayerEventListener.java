@@ -50,8 +50,9 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
   }
 
-  ExoPlayerEventListener(ExoPlayer exoPlayer, VideoPlayerCallbacks events) {
-    this(exoPlayer, events, false, Messages.PlatformVideoViewType.TEXTURE_VIEW);
+  ExoPlayerEventListener(
+      ExoPlayer exoPlayer, VideoPlayerCallbacks events, Messages.PlatformVideoViewType viewType) {
+    this(exoPlayer, events, false, viewType);
   }
 
   ExoPlayerEventListener(
@@ -199,7 +200,8 @@ final class ExoPlayerEventListener implements Player.Listener {
   public void onPlayerError(@NonNull final PlaybackException error) {
     setBuffering(false);
     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-      // See https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
+      // See
+      // https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
       exoPlayer.seekToDefaultPosition();
       exoPlayer.prepare();
     } else {
