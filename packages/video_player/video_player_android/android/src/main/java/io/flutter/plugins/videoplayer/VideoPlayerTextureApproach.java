@@ -1,12 +1,14 @@
 package io.flutter.plugins.videoplayer;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
+
 import io.flutter.view.TextureRegistry;
 
 final class VideoPlayerTextureApproach extends VideoPlayer

@@ -5,6 +5,7 @@
 package io.flutter.plugins.videoplayer;
 
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.Format;
@@ -13,6 +14,7 @@ import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
+
 import java.util.Objects;
 
 final class ExoPlayerEventListener implements Player.Listener {
@@ -109,8 +111,7 @@ final class ExoPlayerEventListener implements Player.Listener {
               getRotationCorrectionFromUnappliedRotation(reportedRotationCorrection);
         } catch (IllegalArgumentException e) {
           // Unapplied rotation other than 0, 90, 180, 270 reported by VideoSize. Because this is
-          // unexpected,
-          // we apply no rotation correction.
+          // unexpected, we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
         }
@@ -131,8 +132,7 @@ final class ExoPlayerEventListener implements Player.Listener {
           reportedRotationCorrection = RotationDegrees.fromDegrees(rotationCorrection);
         } catch (IllegalArgumentException e) {
           // Rotation correction other than 0, 90, 180, 270 reported by Format. Because this is
-          // unexpected,
-          // we apply no rotation correction.
+          // unexpected, we apply no rotation correction.
           reportedRotationCorrection = RotationDegrees.ROTATE_0;
           rotationCorrection = 0;
         }
@@ -199,8 +199,7 @@ final class ExoPlayerEventListener implements Player.Listener {
   public void onPlayerError(@NonNull final PlaybackException error) {
     setBuffering(false);
     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-      // See
-      // https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
+      // See https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
       exoPlayer.seekToDefaultPosition();
       exoPlayer.prepare();
     } else {
