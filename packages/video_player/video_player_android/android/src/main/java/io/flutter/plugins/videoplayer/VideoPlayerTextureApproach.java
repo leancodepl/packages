@@ -89,11 +89,12 @@ final class VideoPlayerTextureApproach extends VideoPlayer
   }
 
   void dispose() {
+    // Super must be called first to ensure the player is released first.
+    super.dispose();
+
     surfaceProducer.release();
     // TODO(matanlurey): Remove when embedder no longer calls-back once released.
     // https://github.com/flutter/flutter/issues/156434.
     surfaceProducer.setCallback(null);
-
-    super.dispose();
   }
 }
