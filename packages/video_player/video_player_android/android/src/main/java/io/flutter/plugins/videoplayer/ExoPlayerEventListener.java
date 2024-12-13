@@ -78,25 +78,44 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
   }
 
-  @OptIn(markerClass = UnstableApi.class)
   @SuppressWarnings("SuspiciousNameCombination")
   private void sendInitialized() {
     if (isInitialized) {
       return;
     }
     isInitialized = true;
-    VideoSize videoSize = exoPlayer.getVideoSize();
+
+    // FIXME Comment why this is needed
+    if (viewType == Messages.PlatformVideoViewType.PLATFORM_VIEW) {
+      sendInitializedPlatformViewApproach();
+    } else {
+      sendInitializedTextureApproach();
+    }
+  }
+
+  @OptIn(markerClass = UnstableApi.class)
+  private void sendInitializedPlatformViewApproach() {
     Format videoFormat = exoPlayer.getVideoFormat();
+    RotationDegrees rotationCorrection = RotationDegrees.fromDegrees(videoFormat.rotationDegrees);
+    int width = videoFormat.width;
+    int height = videoFormat.height;
+
+    if (rotationCorrection == RotationDegrees.ROTATE_90
+        || rotationCorrection == RotationDegrees.ROTATE_270) {
+      width = videoFormat.height;
+      height = videoFormat.width;
+
+      rotationCorrection = RotationDegrees.fromDegrees(0);
+    }
+
+    events.onInitialized(width, height, exoPlayer.getDuration(), rotationCorrection.degrees);
+  }
+
+  private void sendInitializedTextureApproach() {
+    VideoSize videoSize = exoPlayer.getVideoSize();
     int rotationCorrection = 0;
-    // FIXME Is this solution okay?
-    int width =
-        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
-            ? videoSize.width
-            : videoFormat.width;
-    int height =
-        (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW)
-            ? videoSize.height
-            : videoFormat.height;
+    int width = videoSize.width;
+    int height = videoSize.height;
 
     if (width != 0 && height != 0) {
       RotationDegrees reportedRotationCorrection = RotationDegrees.ROTATE_0;
@@ -142,9 +161,8 @@ final class ExoPlayerEventListener implements Player.Listener {
       // Switch the width/height if video was taken in portrait mode and a rotation
       // correction was detected.
       // FIXME Describe why needed only for texture view
-      if (viewType == Messages.PlatformVideoViewType.TEXTURE_VIEW
-          && (reportedRotationCorrection == RotationDegrees.ROTATE_90
-              || reportedRotationCorrection == RotationDegrees.ROTATE_270)) {
+      if (reportedRotationCorrection == RotationDegrees.ROTATE_90
+          || reportedRotationCorrection == RotationDegrees.ROTATE_270) {
         width = videoSize.height;
         height = videoSize.width;
       }
