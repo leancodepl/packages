@@ -32,6 +32,6 @@ class NativeViewFactory extends PlatformViewFactory {
     final VideoPlayer player = videoPlayers.get(playerId);
     final ExoPlayer exoPlayer = player.getExoPlayer();
 
-    return new NativeView(context, id, exoPlayer);
+    return new NativeView(context, exoPlayer);
   }
 }

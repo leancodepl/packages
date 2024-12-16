@@ -14,7 +14,7 @@ import io.flutter.plugin.platform.PlatformView;
 class NativeView implements PlatformView {
   @NonNull private final SurfaceView surfaceView;
 
-  NativeView(@NonNull Context context, int id, @NonNull ExoPlayer exoPlayer) {
+  NativeView(@NonNull Context context, @NonNull ExoPlayer exoPlayer) {
     surfaceView = new SurfaceView(context);
     // The line below is needed to display the video correctly on older Android versions.
     surfaceView.setZOrderMediaOverlay(true);
