@@ -18,6 +18,8 @@ final class VideoPlayerTextureApproach extends VideoPlayer
   @NonNull private final TextureRegistry.SurfaceProducer surfaceProducer;
   @Nullable private ExoPlayerState savedStateDuring;
 
+  private static final Messages.PlatformVideoViewType viewType =
+      Messages.PlatformVideoViewType.TEXTURE_VIEW;
   /**
    * Creates a video player.
    *

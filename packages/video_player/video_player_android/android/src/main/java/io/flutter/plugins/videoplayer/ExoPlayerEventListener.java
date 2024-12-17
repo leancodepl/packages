@@ -160,7 +160,6 @@ final class ExoPlayerEventListener implements Player.Listener {
 
       // Switch the width/height if video was taken in portrait mode and a rotation
       // correction was detected.
-      // FIXME Describe why needed only for texture view
       if (reportedRotationCorrection == RotationDegrees.ROTATE_90
           || reportedRotationCorrection == RotationDegrees.ROTATE_270) {
         width = videoSize.height;
