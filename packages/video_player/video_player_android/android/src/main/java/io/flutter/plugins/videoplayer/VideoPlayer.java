@@ -80,7 +80,7 @@ class VideoPlayer {
 
     exoPlayer.addListener(
         new ExoPlayerEventListener(
-            exoPlayer, videoPlayerEvents, wasPlayerInitialized(), getViewType()));
+            exoPlayer, videoPlayerEvents, getViewType(), wasPlayerInitialized()));
     setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     return exoPlayer;

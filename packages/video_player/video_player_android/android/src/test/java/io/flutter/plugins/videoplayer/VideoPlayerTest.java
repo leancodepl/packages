@@ -13,7 +13,6 @@ import androidx.media3.common.Format;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-import io.flutter.view.TextureRegistry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -187,13 +186,5 @@ public final class VideoPlayerTest {
     videoPlayer.dispose();
 
     verify(mockExoPlayer).release();
-  }
-
-  // TODO(matanlurey): Replace with inline calls to onSurfaceAvailable once
-  // available on stable; see https://github.com/flutter/flutter/issues/155131.
-  // This separate method only exists to scope the suppression.
-  @SuppressWarnings({"deprecation", "removal"})
-  void simulateSurfaceCreation(TextureRegistry.SurfaceProducer.Callback producerLifecycle) {
-    producerLifecycle.onSurfaceCreated();
   }
 }

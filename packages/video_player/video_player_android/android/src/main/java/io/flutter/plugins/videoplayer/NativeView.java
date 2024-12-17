@@ -16,7 +16,8 @@ class NativeView implements PlatformView {
 
   NativeView(@NonNull Context context, @NonNull ExoPlayer exoPlayer) {
     surfaceView = new SurfaceView(context);
-    // The line below is needed to display the video correctly on older Android versions.
+    // The line below is needed to display the video correctly on older Android versions (blank
+    // space instead of a video).
     surfaceView.setZOrderMediaOverlay(true);
     exoPlayer.setVideoSurfaceView(surfaceView);
   }

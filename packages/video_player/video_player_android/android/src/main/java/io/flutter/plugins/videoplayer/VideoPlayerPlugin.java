@@ -18,9 +18,11 @@ import io.flutter.view.TextureRegistry;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
-  /// The next non-texture player ID, initialized to a high number to avoid collisions with
-  /// texture IDs (which are generated separately).
-  static Long nextNonTexturePlayerId = 1000000L;
+  /**
+   * The next non-texture player ID, initialized to a high number to avoid collisions with texture
+   * IDs (which are generated separately).
+   */
+  private static Long nextNonTexturePlayerId = 1000000L;
 
   private static final String TAG = "VideoPlayerPlugin";
   private final LongSparseArray<VideoPlayer> videoPlayers = new LongSparseArray<>();
@@ -115,25 +117,19 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
     VideoPlayer videoPlayer;
     if (arg.getViewType() == Messages.PlatformVideoViewType.PLATFORM_VIEW) {
       id = VideoPlayerPlugin.nextNonTexturePlayerId++;
-      EventChannel eventChannel =
-          new EventChannel(flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + id);
-
       videoPlayer =
           VideoPlayer.create(
               flutterState.applicationContext,
-              VideoPlayerEventCallbacks.bindTo(eventChannel),
+              VideoPlayerEventCallbacks.bindTo(createEventChannel(id)),
               videoAsset,
               options);
     } else {
       TextureRegistry.SurfaceProducer handle = flutterState.textureRegistry.createSurfaceProducer();
       id = handle.id();
-      EventChannel eventChannel =
-          new EventChannel(flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + id);
-
       videoPlayer =
           VideoPlayerTextureApproach.create(
               flutterState.applicationContext,
-              VideoPlayerEventCallbacks.bindTo(eventChannel),
+              VideoPlayerEventCallbacks.bindTo(createEventChannel(id)),
               handle,
               videoAsset,
               options);
@@ -141,6 +137,12 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
 
     videoPlayers.put(id, videoPlayer);
     return id;
+  }
+
+  @NonNull
+  private EventChannel createEventChannel(long id) {
+    return new EventChannel(
+        flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + id);
   }
 
   @NonNull

@@ -5,7 +5,6 @@
 package io.flutter.plugins.videoplayer;
 
 import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.Format;
@@ -14,15 +13,14 @@ import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
-
 import java.util.Objects;
 
 final class ExoPlayerEventListener implements Player.Listener {
   private final ExoPlayer exoPlayer;
   private final VideoPlayerCallbacks events;
+  private final Messages.PlatformVideoViewType viewType;
   private boolean isBuffering = false;
   private boolean isInitialized;
-  private Messages.PlatformVideoViewType viewType;
 
   private enum RotationDegrees {
     ROTATE_0(0),
@@ -52,18 +50,18 @@ final class ExoPlayerEventListener implements Player.Listener {
 
   ExoPlayerEventListener(
       ExoPlayer exoPlayer, VideoPlayerCallbacks events, Messages.PlatformVideoViewType viewType) {
-    this(exoPlayer, events, false, viewType);
+    this(exoPlayer, events, viewType, false);
   }
 
   ExoPlayerEventListener(
       ExoPlayer exoPlayer,
       VideoPlayerCallbacks events,
-      boolean initialized,
-      Messages.PlatformVideoViewType viewType) {
+      Messages.PlatformVideoViewType viewType,
+      boolean initialized) {
     this.exoPlayer = exoPlayer;
     this.events = events;
-    this.isInitialized = initialized;
     this.viewType = viewType;
+    this.isInitialized = initialized;
   }
 
   private void setBuffering(boolean buffering) {
@@ -85,18 +83,20 @@ final class ExoPlayerEventListener implements Player.Listener {
     }
     isInitialized = true;
 
-    // FIXME Comment why this is needed
     if (viewType == Messages.PlatformVideoViewType.PLATFORM_VIEW) {
-      sendInitializedPlatformViewApproach();
+      sendInitializedForPlatformViewApproach();
     } else {
-      sendInitializedTextureApproach();
+      sendInitializedForTextureApproach();
     }
   }
 
   @OptIn(markerClass = UnstableApi.class)
-  private void sendInitializedPlatformViewApproach() {
+  private void sendInitializedForPlatformViewApproach() {
+    // We can't rely on VideoSize here, because at this point it is not available - the platform
+    // view was not created yet. We use the video format instead.
     Format videoFormat = exoPlayer.getVideoFormat();
-    RotationDegrees rotationCorrection = RotationDegrees.fromDegrees(videoFormat.rotationDegrees);
+    RotationDegrees rotationCorrection =
+        RotationDegrees.fromDegrees(Objects.requireNonNull(videoFormat).rotationDegrees);
     int width = videoFormat.width;
     int height = videoFormat.height;
 
@@ -111,12 +111,11 @@ final class ExoPlayerEventListener implements Player.Listener {
     events.onInitialized(width, height, exoPlayer.getDuration(), rotationCorrection.degrees);
   }
 
-  private void sendInitializedTextureApproach() {
+  private void sendInitializedForTextureApproach() {
     VideoSize videoSize = exoPlayer.getVideoSize();
     int rotationCorrection = 0;
     int width = videoSize.width;
     int height = videoSize.height;
-
     if (width != 0 && height != 0) {
       RotationDegrees reportedRotationCorrection = RotationDegrees.ROTATE_0;
 
@@ -217,8 +216,7 @@ final class ExoPlayerEventListener implements Player.Listener {
   public void onPlayerError(@NonNull final PlaybackException error) {
     setBuffering(false);
     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
-      // See
-      // https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
+      // See https://exoplayer.dev/live-streaming.html#behindlivewindowexception-and-error_code_behind_live_window
       exoPlayer.seekToDefaultPosition();
       exoPlayer.prepare();
     } else {
