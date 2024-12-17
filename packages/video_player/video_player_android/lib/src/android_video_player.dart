@@ -165,8 +165,6 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     final PlatformVideoViewCreationParams creationParams =
         PlatformVideoViewCreationParams(playerId: playerId);
 
-    // FIXME Check if this setup is complete
-
     return Builder(
       builder: (BuildContext context) => IgnorePointer(
         // IgnorePointer so that GestureDetector can be used above the platform view.
