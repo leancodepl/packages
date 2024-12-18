@@ -47,6 +47,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<Duration> get position async => value.position;
 
   @override
+  VideoViewType get viewType => VideoViewType.textureView;
+
+  @override
   Future<void> seekTo(Duration moment) async {}
 
   @override
@@ -309,6 +312,7 @@ void main() {
         );
       });
     });
+
     group('initialize', () {
       test('started app lifecycle observing', () async {
         final VideoPlayerController controller =
@@ -446,6 +450,7 @@ void main() {
           <String, String>{'Authorization': 'Bearer token'},
         );
       }, skip: kIsWeb /* Web does not support file assets. */);
+
       test('successful initialize on controller with error clears error',
           () async {
         final VideoPlayerController controller = VideoPlayerController.network(
@@ -471,6 +476,16 @@ void main() {
         fakeVideoPlayerPlatform.forceInitError = false;
         await controller.initialize();
         expect(controller.value.hasError, equals(false));
+      });
+
+      test('uses passed view type', () async {
+        final VideoPlayerController controller = VideoPlayerController.file(
+            File('a.avi'),
+            viewType: VideoViewType.platformView);
+        await controller.initialize();
+
+        expect(fakeVideoPlayerPlatform.dataSources[0].viewType,
+            VideoViewType.platformView);
       });
     });
 
