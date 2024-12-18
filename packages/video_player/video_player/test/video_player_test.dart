@@ -312,6 +312,7 @@ void main() {
         );
       });
     });
+
     group('initialize', () {
       test('started app lifecycle observing', () async {
         final VideoPlayerController controller =
@@ -449,6 +450,7 @@ void main() {
           <String, String>{'Authorization': 'Bearer token'},
         );
       }, skip: kIsWeb /* Web does not support file assets. */);
+
       test('successful initialize on controller with error clears error',
           () async {
         final VideoPlayerController controller = VideoPlayerController.network(
