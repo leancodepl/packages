@@ -147,7 +147,15 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Widget buildView(int textureId) {
-    return Texture(textureId: textureId);
+    return buildViewWithOptions(
+      VideoViewOptions(
+        playerId: textureId,
+        // Texture view was the only supported view type before
+        // buildViewWithOptions was introduced. We pass it here to maintain
+        // backwards compatibility.
+        viewType: VideoViewType.textureView,
+      ),
+    );
   }
 
   @override
