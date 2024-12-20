@@ -57,7 +57,7 @@ class _App extends StatelessWidget {
           ),
         ),
         body: TabBarView(
-          children: Platform.isIOS
+          children: Platform.isIOS || Platform.isAndroid
               ? <Widget>[
                   _ViewTypeTabBar(
                     builder: (VideoViewType viewType) =>
