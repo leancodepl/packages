@@ -188,6 +188,31 @@ void main() {
           <String, String>{'Authorization': 'Bearer token'});
       expect(textureId, 3);
     });
+
+    test('create with texture view', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.file,
+        uri: 'someUri',
+        // Texture view is a default view type.
+      ));
+      expect(log.log.last, 'create');
+      expect(
+          log.passedCreateMessage?.viewType, PlatformVideoViewType.textureView);
+      expect(textureId, 3);
+    });
+
+    test('create with platform view', () async {
+      final int? playerId = await player.create(DataSource(
+        sourceType: DataSourceType.file,
+        uri: 'someUri',
+        viewType: VideoViewType.platformView,
+      ));
+      expect(log.log.last, 'create');
+      expect(log.passedCreateMessage?.viewType,
+          PlatformVideoViewType.platformView);
+      expect(playerId, 3);
+    });
+
     test('setLooping', () async {
       await player.setLooping(1, true);
       expect(log.log.last, 'setLooping');

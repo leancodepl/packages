@@ -1,3 +1,7 @@
+## 2.8.0
+
+* Adds support for platform views as an optional way of displaying a video.
+
 ## 2.7.16
 
 * Updates internal Pigeon API to use newer features.
