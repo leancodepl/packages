@@ -1,3 +1,8 @@
+## 22.7.1
+
+* [swift] Adds support for platform checks of imports of ProxyApis.
+* Updates minimum supported SDK version to Flutter 3.22/Dart 3.4.
+
 ## 22.7.0
 
 * [swift, kotlin] Adds event channel support.

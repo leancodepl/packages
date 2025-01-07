@@ -10,14 +10,15 @@
 
 @implementation FVPNativeVideoViewFactory {
   NSObject<FlutterBinaryMessenger> *_messenger;
-  NSMutableDictionary<NSNumber *, FVPVideoPlayer *> *_playersById;
+  FVPVideoPlayer * (^_playerByIdProvider)(NSNumber *);
 }
+
 - (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
-                      playersById:(NSMutableDictionary<NSNumber *, FVPVideoPlayer *> *)playersById {
+               playerByIdProvider:(FVPVideoPlayer * (^)(NSNumber *))playerByIdProvider {
   self = [super init];
   if (self) {
     _messenger = messenger;
-    _playersById = playersById;
+    _playerByIdProvider = [playerByIdProvider copy];
   }
   return self;
 }
@@ -26,11 +27,12 @@
                                     viewIdentifier:(int64_t)viewId
                                          arguments:(FVPPlatformVideoViewCreationParams *)args {
   NSNumber *playerId = @(args.playerId);
-  FVPVideoPlayer *player = _playersById[playerId];
+  FVPVideoPlayer *player = _playerByIdProvider(playerId);
   return [[FVPNativeVideoView alloc] initWithPlayer:player.player];
 }
 
 - (NSObject<FlutterMessageCodec> *)createArgsCodec {
   return FVPGetMessagesCodec();
 }
+
 @end
