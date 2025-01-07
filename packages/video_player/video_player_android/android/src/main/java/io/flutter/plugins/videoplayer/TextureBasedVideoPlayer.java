@@ -13,13 +13,13 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 import io.flutter.view.TextureRegistry;
 
-final class VideoPlayerTextureApproach extends VideoPlayer
+final class TextureBasedVideoPlayer extends VideoPlayer
     implements TextureRegistry.SurfaceProducer.Callback {
   @NonNull private final TextureRegistry.SurfaceProducer surfaceProducer;
   @Nullable private ExoPlayerState savedStateDuring;
 
   /**
-   * Creates a video player.
+   * Creates a texture-based video player.
    *
    * @param context application context.
    * @param events event callbacks.
@@ -29,13 +29,13 @@ final class VideoPlayerTextureApproach extends VideoPlayer
    * @return a video player instance.
    */
   @NonNull
-  static VideoPlayerTextureApproach create(
+  static TextureBasedVideoPlayer create(
       @NonNull Context context,
       @NonNull VideoPlayerCallbacks events,
       @NonNull TextureRegistry.SurfaceProducer surfaceProducer,
       @NonNull VideoAsset asset,
       @NonNull VideoPlayerOptions options) {
-    return new VideoPlayerTextureApproach(
+    return new TextureBasedVideoPlayer(
         () -> {
           ExoPlayer.Builder builder =
               new ExoPlayer.Builder(context)
@@ -49,7 +49,7 @@ final class VideoPlayerTextureApproach extends VideoPlayer
   }
 
   @VisibleForTesting
-  VideoPlayerTextureApproach(
+  TextureBasedVideoPlayer(
       @NonNull ExoPlayerProvider exoPlayerProvider,
       @NonNull VideoPlayerCallbacks events,
       @NonNull TextureRegistry.SurfaceProducer surfaceProducer,

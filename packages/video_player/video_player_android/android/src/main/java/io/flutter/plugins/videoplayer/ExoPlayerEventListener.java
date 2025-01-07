@@ -84,14 +84,14 @@ final class ExoPlayerEventListener implements Player.Listener {
     isInitialized = true;
 
     if (viewType == Messages.PlatformVideoViewType.PLATFORM_VIEW) {
-      sendInitializedForPlatformViewApproach();
+      sendInitializedForPlatformViewBased();
     } else {
-      sendInitializedForTextureApproach();
+      sendInitializedForTextureBased();
     }
   }
 
   @OptIn(markerClass = UnstableApi.class)
-  private void sendInitializedForPlatformViewApproach() {
+  private void sendInitializedForPlatformViewBased() {
     // We can't rely on VideoSize here, because at this point it is not available - the platform
     // view was not created yet. We use the video format instead.
     Format videoFormat = exoPlayer.getVideoFormat();
@@ -111,7 +111,7 @@ final class ExoPlayerEventListener implements Player.Listener {
     events.onInitialized(width, height, exoPlayer.getDuration(), rotationCorrection.degrees);
   }
 
-  private void sendInitializedForTextureApproach() {
+  private void sendInitializedForTextureBased() {
     VideoSize videoSize = exoPlayer.getVideoSize();
     int rotationCorrection = 0;
     int width = videoSize.width;

@@ -51,7 +51,7 @@ public final class ExoPlayerEventListenerTest {
 
   @Test
   @Config(maxSdk = 28)
-  public void onPlaybackStateChangedReadySendInitialized_belowAndroid29_textureApproach() {
+  public void onPlaybackStateChangedReadySendInitialized_belowAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 0, 0);
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
     when(mockExoPlayer.getDuration()).thenReturn(10L);
@@ -63,7 +63,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(minSdk = 29)
   public void
-      onPlaybackStateChangedReadySendInitializedWithRotationCorrectionAndWidthAndHeightSwap_aboveAndroid29_textureApproach() {
+      onPlaybackStateChangedReadySendInitializedWithRotationCorrectionAndWidthAndHeightSwap_aboveAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 0, 0);
     int rotationCorrection = 90;
     Format videoFormat = new Format.Builder().setRotationDegrees(rotationCorrection).build();
@@ -79,7 +79,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(maxSdk = 21)
   public void
-      onPlaybackStateChangedReadyInPortraitMode90DegreesSwapWidthAndHeight_belowAndroid21_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode90DegreesSwapWidthAndHeight_belowAndroid21_textureBased() {
     VideoSize size = new VideoSize(800, 400, 90, 0);
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
     when(mockExoPlayer.getDuration()).thenReturn(10L);
@@ -91,7 +91,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(minSdk = 22, maxSdk = 28)
   public void
-      onPlaybackStateChangedReadyInPortraitMode90DegreesDoesNotSwapWidthAndHeight_aboveAndroid21belowAndroid29_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode90DegreesDoesNotSwapWidthAndHeight_aboveAndroid21belowAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 90, 0);
 
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
@@ -104,7 +104,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(minSdk = 29)
   public void
-      onPlaybackStateChangedReadyInPortraitMode90DegreesSwapWidthAndHeight_aboveAndroid29_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode90DegreesSwapWidthAndHeight_aboveAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 0, 0);
     int rotationCorrection = 90;
     Format videoFormat = new Format.Builder().setRotationDegrees(rotationCorrection).build();
@@ -120,7 +120,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(maxSdk = 21)
   public void
-      onPlaybackStateChangedReadyInPortraitMode270DegreesSwapWidthAndHeight_belowAndroid21_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode270DegreesSwapWidthAndHeight_belowAndroid21_textureBased() {
     VideoSize size = new VideoSize(800, 400, 270, 0);
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
     when(mockExoPlayer.getDuration()).thenReturn(10L);
@@ -132,7 +132,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(minSdk = 22, maxSdk = 28)
   public void
-      onPlaybackStateChangedReadyInPortraitMode270DegreesDoesNotSwapWidthAndHeight_aboveAndroid21belowAndroid29_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode270DegreesDoesNotSwapWidthAndHeight_aboveAndroid21belowAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 270, 0);
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
     when(mockExoPlayer.getDuration()).thenReturn(10L);
@@ -144,7 +144,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(minSdk = 29)
   public void
-      onPlaybackStateChangedReadyInPortraitMode270DegreesSwapWidthAndHeight_aboveAndroid29_textureApproach() {
+      onPlaybackStateChangedReadyInPortraitMode270DegreesSwapWidthAndHeight_aboveAndroid29_textureBased() {
     VideoSize size = new VideoSize(800, 400, 0, 0);
     int rotationCorrection = 270;
     Format videoFormat = new Format.Builder().setRotationDegrees(rotationCorrection).build();
@@ -160,7 +160,7 @@ public final class ExoPlayerEventListenerTest {
   @Test
   @Config(maxSdk = 21)
   public void
-      onPlaybackStateChangedReadyFlipped180DegreesInformEventHandler_belowAndroid21_textureApproach() {
+      onPlaybackStateChangedReadyFlipped180DegreesInformEventHandler_belowAndroid21_textureBased() {
     VideoSize size = new VideoSize(800, 400, 180, 0);
     when(mockExoPlayer.getVideoSize()).thenReturn(size);
     when(mockExoPlayer.getDuration()).thenReturn(10L);

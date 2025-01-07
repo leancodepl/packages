@@ -29,9 +29,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 
 /**
- * Unit tests for {@link VideoPlayerTextureApproach}.
+ * Unit tests for {@link TextureBasedVideoPlayer}.
  *
- * <p>This test suite <em>narrowly verifies</em> that {@link VideoPlayerTextureApproach} interfaces
+ * <p>This test suite <em>narrowly verifies</em> that {@link TextureBasedVideoPlayer} interfaces
  * with the {@link ExoPlayer} interface <em>exactly</em> as it did when the test suite was created.
  * That is, if the behavior changes, this test will need to change. However, this suite should catch
  * bugs related to <em>"this is a safe refactor with no behavior changes"</em>.
@@ -41,7 +41,7 @@ import org.robolectric.RobolectricTestRunner;
  * in order to figure out how to set everything up so the player "works".
  */
 @RunWith(RobolectricTestRunner.class)
-public final class VideoPlayerTextureApproachTest {
+public final class TextureBasedVideoPlayerTest {
   private static final String FAKE_ASSET_URL = "https://flutter.dev/movie.mp4";
   private FakeVideoAsset fakeVideoAsset;
 
@@ -64,8 +64,8 @@ public final class VideoPlayerTextureApproachTest {
     return createVideoPlayer(new VideoPlayerOptions());
   }
 
-  private VideoPlayerTextureApproach createVideoPlayer(VideoPlayerOptions options) {
-    return new VideoPlayerTextureApproach(
+  private TextureBasedVideoPlayer createVideoPlayer(VideoPlayerOptions options) {
+    return new TextureBasedVideoPlayer(
         () -> mockExoPlayer, mockEvents, mockProducer, fakeVideoAsset.getMediaItem(), options);
   }
 
