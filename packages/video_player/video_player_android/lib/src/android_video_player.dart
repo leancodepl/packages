@@ -35,6 +35,20 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
 
   @override
   Future<int?> create(DataSource dataSource) async {
+    return createWithOptions(
+      VideoCreationOptions(
+        dataSource: dataSource,
+        // Texture view was the only supported view type before
+        // createWithOptions was introduced.
+        viewType: VideoViewType.textureView,
+      ),
+    );
+  }
+
+  @override
+  Future<int?> createWithOptions(VideoCreationOptions options) {
+    final DataSource dataSource = options.dataSource;
+
     String? asset;
     String? packageName;
     String? uri;
@@ -60,7 +74,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
-      viewType: _platformVideoViewTypeFromVideoViewType(dataSource.viewType),
+      viewType: _platformVideoViewTypeFromVideoViewType(options.viewType),
     );
 
     return _api.create(message);
