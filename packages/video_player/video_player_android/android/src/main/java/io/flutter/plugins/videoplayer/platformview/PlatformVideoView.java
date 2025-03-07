@@ -4,23 +4,28 @@
 
 package io.flutter.plugins.videoplayer.platformview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.TextureView;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Objects;
 
 /**
  * A class used to create a native video view that can be embedded in a Flutter app. It wraps an
  * {@link ExoPlayer} instance and displays its video content.
  */
 public final class PlatformVideoView implements PlatformView {
-  @NonNull private final SurfaceView surfaceView;
+  @NonNull private final TextureView textureView;
+  @NonNull private final Player.Listener playerListener;
+  @NonNull private final ExoPlayer exoPlayer;
 
   /**
    * Constructs a new PlatformVideoView.
@@ -28,67 +33,48 @@ public final class PlatformVideoView implements PlatformView {
    * @param context The context in which the view is running.
    * @param exoPlayer The ExoPlayer instance used to play the video.
    */
+  @SuppressLint("SetTextI18n")
   @OptIn(markerClass = UnstableApi.class)
   public PlatformVideoView(@NonNull Context context, @NonNull ExoPlayer exoPlayer) {
-    surfaceView = new SurfaceView(context);
+    this.exoPlayer = exoPlayer;
+    textureView = new TextureView(context);
+    exoPlayer.setVideoTextureView(textureView);
 
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
-      // Workaround for rendering issues on Android 9 (API 28).
-      // On Android 9, using setVideoSurfaceView seems to lead to issues where the first frame is
-      // not displayed if the video is paused initially.
-      // To ensure the first frame is visible, the surface is directly set using holder.getSurface()
-      // when the surface is created, and ExoPlayer seeks to a position to force rendering of the
-      // first frame.
-      setupSurfaceWithCallback(exoPlayer);
-    } else {
-      if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        // Avoid blank space instead of a video on Android versions below 8 by adjusting video's
-        // z-layer within the Android view hierarchy:
-        surfaceView.setZOrderMediaOverlay(true);
-      }
-      exoPlayer.setVideoSurfaceView(surfaceView);
-    }
-  }
+    playerListener =
+        new Player.Listener() {
+          @Override
+          public void onRenderedFirstFrame() {
+            new Handler(Looper.getMainLooper())
+                .postDelayed(
+                    () -> {
+                      if (!exoPlayer.getPlayWhenReady()) {
+                        // FIXME Explain why this is necessary
+                        exoPlayer.seekTo(1);
+                        textureView.invalidate();
+                      }
+                    },
+                    100);
+          }
+        };
 
-  private void setupSurfaceWithCallback(@NonNull ExoPlayer exoPlayer) {
-    surfaceView
-        .getHolder()
-        .addCallback(
-            new SurfaceHolder.Callback() {
-              @Override
-              public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                exoPlayer.setVideoSurface(holder.getSurface());
-                // Force first frame rendering:
-                exoPlayer.seekTo(1);
-              }
-
-              @Override
-              public void surfaceChanged(
-                  @NonNull SurfaceHolder holder, int format, int width, int height) {
-                // No implementation needed.
-              }
-
-              @Override
-              public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-                exoPlayer.setVideoSurface(null);
-              }
-            });
+    exoPlayer.addListener(playerListener); // Add the listener
   }
 
   /**
    * Returns the view associated with this PlatformView.
    *
-   * @return The SurfaceView used to display the video.
+   * @return The TextureView used to display the video.
    */
   @NonNull
   @Override
   public View getView() {
-    return surfaceView;
+    return textureView;
   }
 
   /** Disposes of the resources used by this PlatformView. */
   @Override
   public void dispose() {
-    surfaceView.getHolder().getSurface().release();
+    exoPlayer.removeListener(playerListener);
+    textureView.setSurfaceTextureListener(null);
   }
 }
