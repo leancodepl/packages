@@ -370,8 +370,6 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
   }
 }
 
-class ViewType {}
-
 class _ControlsOverlay extends StatelessWidget {
   const _ControlsOverlay({required this.controller});
 
