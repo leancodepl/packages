@@ -49,7 +49,7 @@ public final class PlatformVideoView implements PlatformView {
                     () -> {
                       if (!exoPlayer.getPlayWhenReady()) {
                         // FIXME Explain why this is necessary
-                        exoPlayer.seekTo(1);
+                        exoPlayer.seekTo(exoPlayer.getCurrentPosition());
                         textureView.invalidate();
                       }
                     },
