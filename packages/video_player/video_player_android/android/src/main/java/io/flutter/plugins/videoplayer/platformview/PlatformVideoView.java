@@ -16,7 +16,6 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import io.flutter.plugin.platform.PlatformView;
-import java.util.Objects;
 
 /**
  * A class used to create a native video view that can be embedded in a Flutter app. It wraps an
@@ -47,12 +46,18 @@ public final class PlatformVideoView implements PlatformView {
             new Handler(Looper.getMainLooper())
                 .postDelayed(
                     () -> {
-                      if (!exoPlayer.getPlayWhenReady()) {
-                        // FIXME Explain why this is necessary
+                      boolean playingInitially = exoPlayer.getPlayWhenReady();
+                      if (!playingInitially) {
+                        // This ensures that the first frame is rendered even when the video is
+                        // initially paused. Videos that are paused initially do not always
+                        // render the first frame (blank screen is visible instead).
+                        // Seeking to the current position and invalidating the view forces the
+                        // rendering of a first frame.
                         exoPlayer.seekTo(exoPlayer.getCurrentPosition());
                         textureView.invalidate();
                       }
                     },
+                    // A slight delay is needed to ensure that the first frame is rendered.
                     100);
           }
         };
