@@ -21,7 +21,7 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         key: const ValueKey<String>('home_page'),
         appBar: AppBar(
@@ -32,6 +32,7 @@ class _App extends StatelessWidget {
               Tab(icon: Icon(Icons.cloud), text: 'Remote'),
               Tab(icon: Icon(Icons.videocam), text: 'RTSP'),
               Tab(icon: Icon(Icons.insert_drive_file), text: 'Asset'),
+              Tab(icon: Icon(Icons.list), text: 'List example'),
             ],
           ),
         ),
@@ -47,6 +48,10 @@ class _App extends StatelessWidget {
             _ViewTypeTabBar(
               builder: (VideoViewType viewType) =>
                   _ButterFlyAssetVideo(viewType),
+            ),
+            _ViewTypeTabBar(
+              builder: (VideoViewType viewType) =>
+                  _ButterFlyAssetVideoInList(viewType),
             ),
           ],
         ),
@@ -325,6 +330,48 @@ class _RtspRemoteVideoState extends State<_RtspRemoteVideo> {
   }
 }
 
+class _ButterFlyAssetVideoInList extends StatelessWidget {
+  const _ButterFlyAssetVideoInList(this.viewType);
+
+  final VideoViewType viewType;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        const _ExampleCard(title: 'Item a'),
+        const _ExampleCard(title: 'Item b'),
+        const _ExampleCard(title: 'Item c'),
+        const _ExampleCard(title: 'Item d'),
+        const _ExampleCard(title: 'Item e'),
+        const _ExampleCard(title: 'Item f'),
+        const _ExampleCard(title: 'Item g'),
+        Card(
+          child: Column(
+            children: <Widget>[
+              const ListTile(
+                leading: Icon(Icons.cake),
+                title: Text('Video video'),
+              ),
+              _ButterFlyAssetVideo(viewType),
+            ],
+          ),
+        ),
+        const _ExampleCard(title: 'Item h'),
+        const _ExampleCard(title: 'Item i'),
+        const _ExampleCard(title: 'Item j'),
+        const _ExampleCard(title: 'Item k'),
+        const _ExampleCard(title: 'Item l'),
+        const _ExampleCard(title: 'Item m'),
+        const _ExampleCard(title: 'Item n'),
+        const _ExampleCard(title: 'Item o'),
+      ],
+    );
+  }
+}
+
+class ViewType {}
+
 class _ControlsOverlay extends StatelessWidget {
   const _ControlsOverlay({required this.controller});
 
@@ -398,6 +445,49 @@ class _ControlsOverlay extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A filler card to show the video in a list of scrolling contents.
+class _ExampleCard extends StatelessWidget {
+  const _ExampleCard({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: const Icon(Icons.airline_seat_flat_angled),
+            title: Text(title),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: OverflowBar(
+              alignment: MainAxisAlignment.end,
+              spacing: 8.0,
+              children: <Widget>[
+                TextButton(
+                  child: const Text('BUY TICKETS'),
+                  onPressed: () {
+                    /* ... */
+                  },
+                ),
+                TextButton(
+                  child: const Text('SELL TICKETS'),
+                  onPressed: () {
+                    /* ... */
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
