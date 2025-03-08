@@ -1,3 +1,7 @@
+## 2.8.2
+
+* Changes the platform view implementation to use TextureView instead of SurfaceView.
+
 ## 2.8.1
 
 * Updates compileSdk 34 to flutter.compileSdkVersion.
