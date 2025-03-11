@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Factory block returning an AVCaptureDevice.
 /// Used in tests to inject a device into FLTCam.
-typedef NSObject<FLTCaptureDevice> *_Nonnull (^CaptureDeviceFactory)(void);
+typedef NSObject<FLTCaptureDevice> *_Nonnull (^CaptureDeviceFactory)(NSString *name);
 
 typedef NSObject<FLTCaptureSession> *_Nonnull (^CaptureSessionFactory)(void);
 
@@ -37,6 +37,7 @@ typedef CMVideoDimensions (^VideoDimensionsForFormat)(NSObject<FLTCaptureDeviceF
 /// Initializes a new camera configuration with specified media settings and factories.
 - (instancetype)initWithMediaSettings:(FCPPlatformMediaSettings *)mediaSettings
                  mediaSettingsWrapper:(FLTCamMediaSettingsAVWrapper *)mediaSettingsWrapper
+                    initialCameraName:(NSString *)initialCameraName
                  captureDeviceFactory:(CaptureDeviceFactory)captureDeviceFactory
                 captureSessionFactory:(CaptureSessionFactory)captureSessionFactory
                   captureSessionQueue:(dispatch_queue_t)captureSessionQueue
@@ -47,6 +48,7 @@ typedef CMVideoDimensions (^VideoDimensionsForFormat)(NSObject<FLTCaptureDeviceF
 @property(nonatomic, strong) dispatch_queue_t captureSessionQueue;
 @property(nonatomic, strong) FCPPlatformMediaSettings *mediaSettings;
 @property(nonatomic, strong) FLTCamMediaSettingsAVWrapper *mediaSettingsWrapper;
+@property(nonatomic, copy) NSString *initialCameraName;
 @property(nonatomic, copy) CaptureDeviceFactory captureDeviceFactory;
 @property(nonatomic, copy) CaptureDeviceFactory audioCaptureDeviceFactory;
 @property(nonatomic, copy) VideoDimensionsForFormat videoDimensionsForFormat;

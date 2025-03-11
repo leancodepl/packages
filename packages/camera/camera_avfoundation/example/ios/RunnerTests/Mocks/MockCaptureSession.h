@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) void (^startRunningStub)(void);
 @property(nonatomic, copy) void (^stopRunningStub)(void);
 @property(nonatomic, copy) void (^setSessionPresetStub)(AVCaptureSessionPreset preset);
+@property(nonatomic, copy) BOOL (^canAddInputStub)(NSObject<FLTCaptureInput> * input);
+@property(nonatomic, copy) BOOL (^canAddOutputStub)(AVCaptureOutput * output);
+@property(nonatomic, copy) BOOL (^canAddConnectionStub)(AVCaptureConnection * connection);
 
 // Properties re-declared as read/write so a mocked value can be set during testing.
 @property(nonatomic, strong) NSMutableArray<AVCaptureInput *> *inputs;

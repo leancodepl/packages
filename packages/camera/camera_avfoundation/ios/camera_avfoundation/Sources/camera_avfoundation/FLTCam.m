@@ -190,7 +190,7 @@ static void selectBestFormatForRequestedFrameRate(
   _videoCaptureSession = configuration.videoCaptureSession;
   _audioCaptureSession = configuration.audioCaptureSession;
   _captureDeviceFactory = configuration.captureDeviceFactory;
-  _captureDevice = _captureDeviceFactory();
+  _captureDevice = _captureDeviceFactory(configuration.initialCameraName);
   _captureDeviceInputFactory = configuration.captureDeviceInputFactory;
   _videoDimensionsForFormat = configuration.videoDimensionsForFormat;
   _flashMode = _captureDevice.hasFlash ? FCPPlatformFlashModeAuto : FCPPlatformFlashModeOff;
@@ -1048,7 +1048,7 @@ static void selectBestFormatForRequestedFrameRate(
     return;
   }
 
-  _captureDevice = self.captureDeviceFactory();
+  _captureDevice = self.captureDeviceFactory(cameraName);
 
   AVCaptureConnection *oldConnection =
       [_captureVideoOutput connectionWithMediaType:AVMediaTypeVideo];

@@ -504,9 +504,8 @@ static FlutterError *FlutterErrorFromNSError(NSError *error) {
   FLTCamConfiguration *camConfiguration =
       [[FLTCamConfiguration alloc] initWithMediaSettings:settings
                                     mediaSettingsWrapper:mediaSettingsAVWrapper
-                                    captureDeviceFactory:^NSObject<FLTCaptureDevice> *_Nonnull {
-                                      return self.captureDeviceFactory(name);
-                                    }
+                                       initialCameraName:name
+                                    captureDeviceFactory:_captureDeviceFactory
                                    captureSessionFactory:_captureSessionFactory
                                      captureSessionQueue:_captureSessionQueue
                                captureDeviceInputFactory:_captureDeviceInputFactory];

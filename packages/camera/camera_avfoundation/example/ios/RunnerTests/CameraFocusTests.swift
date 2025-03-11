@@ -13,7 +13,7 @@ final class CameraFocusTests: XCTestCase {
     let mockDeviceOrientationProvider = MockDeviceOrientationProvider()
 
     let configuration = FLTCreateTestCameraConfiguration()
-    configuration.captureDeviceFactory = { mockDevice }
+    configuration.captureDeviceFactory = { _ in mockDevice }
     configuration.deviceOrientationProvider = mockDeviceOrientationProvider
     let camera = FLTCreateCamWithConfiguration(configuration)
 

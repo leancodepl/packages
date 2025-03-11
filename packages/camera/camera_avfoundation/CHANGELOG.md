@@ -1,3 +1,7 @@
+## 0.9.19
+
+* Fixes switching between cameras during recording
+
 ## 0.9.18+9
 
 * Backfills unit tests for `CameraPlugin` class.

@@ -57,7 +57,8 @@ FLTCamConfiguration *FLTCreateTestCameraConfiguration(void) {
   FLTCamConfiguration *configuration = [[FLTCamConfiguration alloc]
       initWithMediaSettings:FCPGetDefaultMediaSettings(FCPPlatformResolutionPresetMedium)
       mediaSettingsWrapper:[[FLTCamMediaSettingsAVWrapper alloc] init]
-      captureDeviceFactory:^NSObject<FLTCaptureDevice> *(void) {
+                                        initialCameraName: @"camera_name"
+      captureDeviceFactory:^NSObject<FLTCaptureDevice> *(NSString*name) {
         return captureDeviceMock;
       }
       captureSessionFactory:^NSObject<FLTCaptureSession> *_Nonnull {

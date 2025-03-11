@@ -31,7 +31,7 @@ final class CameraSessionPresetsTests: XCTestCase {
     }
 
     let configuration = FLTCreateTestCameraConfiguration()
-    configuration.captureDeviceFactory = { captureDeviceMock }
+    configuration.captureDeviceFactory = { _ in captureDeviceMock }
     configuration.videoDimensionsForFormat = { format in
       return CMVideoDimensions(width: 1, height: 1)
     }
@@ -59,7 +59,7 @@ final class CameraSessionPresetsTests: XCTestCase {
     let configuration = FLTCreateTestCameraConfiguration()
     configuration.videoCaptureSession = videoSessionMock
     configuration.mediaSettings = FCPGetDefaultMediaSettings(FCPPlatformResolutionPreset.max)
-    configuration.captureDeviceFactory = { MockCaptureDevice() }
+    configuration.captureDeviceFactory = { _ in MockCaptureDevice() }
 
     FLTCreateCamWithConfiguration(configuration)
 

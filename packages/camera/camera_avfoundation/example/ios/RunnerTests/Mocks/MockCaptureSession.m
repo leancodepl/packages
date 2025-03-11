@@ -59,15 +59,27 @@
 }
 
 - (BOOL)canAddConnection:(nonnull AVCaptureConnection *)connection {
-  return YES;
+  if (self.canAddConnectionStub) {
+    return self.canAddConnectionStub(connection);
+  } else {
+    return YES;
+  }
 }
 
 - (BOOL)canAddInput:(nonnull NSObject<FLTCaptureInput> *)input {
-  return YES;
+  if (self.canAddInputStub) {
+    return self.canAddInputStub(input);
+  } else {
+    return YES;
+  }
 }
 
 - (BOOL)canAddOutput:(nonnull AVCaptureOutput *)output {
-  return YES;
+  if (self.canAddOutputStub) {
+    return self.canAddOutputStub(output);
+  } else {
+    return YES;
+  }
 }
 
 - (void)removeInput:(nonnull NSObject<FLTCaptureInput> *)input {
