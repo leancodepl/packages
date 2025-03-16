@@ -85,7 +85,7 @@ final class FLTCamZoomTests: XCTestCase {
 
     let targetZoom = CGFloat(1.0)
 
-    mockDevice.maxAvailableVideoZoomFactor = Float(targetZoom)
+    mockDevice.maxAvailableVideoZoomFactor = CGFloat(targetZoom)
 
     XCTAssertEqual(camera.maximumAvailableZoomFactor, targetZoom)
   }
@@ -95,7 +95,7 @@ final class FLTCamZoomTests: XCTestCase {
 
     let targetZoom = CGFloat(1.0)
 
-    mockDevice.minAvailableVideoZoomFactor = Float(targetZoom)
+    mockDevice.minAvailableVideoZoomFactor = CGFloat(targetZoom)
 
     XCTAssertEqual(camera.minimumAvailableZoomFactor, targetZoom)
   }
