@@ -6,14 +6,12 @@ import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/src/messages.g.dart',
-  objcHeaderOut:
-      'ios/camera_avfoundation/Sources/camera_avfoundation/include/camera_avfoundation/messages.g.h',
-  objcSourceOut:
-      'ios/camera_avfoundation/Sources/camera_avfoundation/messages.g.m',
-  objcOptions: ObjcOptions(
-    prefix: 'FCP',
-    headerIncludePath: './include/camera_avfoundation/messages.g.h',
-  ),
+  // objcOptions: ObjcOptions(
+  //   prefix: 'FCP',
+  //   headerIncludePath: './include/camera_avfoundation/messages.g.h',
+  // ),
+  swiftOut:
+      'ios/camera_avfoundation/Sources/camera_avfoundation/messages.g.swift',
   copyrightHeader: 'pigeons/copyright.txt',
 ))
 

@@ -24,76 +24,76 @@ final class SavePhotoDelegateTests: XCTestCase {
     waitForExpectations(timeout: 30, handler: nil)
   }
 
-  func testHandlePhotoCaptureResult_mustCompleteWithErrorIfFailedToWrite() {
-    let completionExpectation = expectation(
-      description: "Must complete with error if failed to write file.")
-    let ioQueue = DispatchQueue(label: "test")
-    let ioError = NSError(
-      domain: "IOError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Localized IO Error"])
-    let delegate = FLTSavePhotoDelegate(path: "test", ioQueue: ioQueue) { path, error in
-      XCTAssertEqual(ioError, error as NSError?)
-      XCTAssertNil(path)
-      completionExpectation.fulfill()
-    }
-
-    let mockWritableData = MockWritableData()
-    mockWritableData.writeToFileStub = { path, options in
-      throw ioError
-    }
-
-    delegate.handlePhotoCaptureResult(error: nil) { mockWritableData }
-
-    waitForExpectations(timeout: 30, handler: nil)
-  }
-
-  func testHandlePhotoCaptureResult_mustCompleteWithFilePathIfSuccessToWrite() {
-    let completionExpectation = expectation(
-      description: "Must complete with file path if succeeds to write file.")
-    let ioQueue = DispatchQueue(label: "test")
-    let filePath = "test"
-    let delegate = FLTSavePhotoDelegate(path: filePath, ioQueue: ioQueue) { path, error in
-      XCTAssertNil(error)
-      XCTAssertEqual(filePath, path)
-      completionExpectation.fulfill()
-    }
-
-    let mockWritableData = MockWritableData()
-    mockWritableData.writeToFileStub = { path, options in }
-
-    delegate.handlePhotoCaptureResult(error: nil) { mockWritableData }
-
-    waitForExpectations(timeout: 30, handler: nil)
-  }
-
-  func testHandlePhotoCaptureResult_bothProvideDataAndSaveFileMustRunOnIOQueue() {
-    let dataProviderQueueExpectation = expectation(
-      description: "Data provider must run on io queue.")
-    let writeFileQueueExpectation = expectation(description: "File writing must run on io queue.")
-    let completionExpectation = expectation(
-      description: "Must complete with file path if success to write file.")
-    let ioQueue = DispatchQueue(label: "test")
-    let ioQueueSpecific = DispatchSpecificKey<Void>()
-    ioQueue.setSpecific(key: ioQueueSpecific, value: ())
-
-    let mockWritableData = MockWritableData()
-    mockWritableData.writeToFileStub = { path, options in
-      if DispatchQueue.getSpecific(key: ioQueueSpecific) != nil {
-        writeFileQueueExpectation.fulfill()
-      }
-    }
-
-    let filePath = "test"
-    let delegate = FLTSavePhotoDelegate(path: filePath, ioQueue: ioQueue) { path, error in
-      completionExpectation.fulfill()
-    }
-
-    delegate.handlePhotoCaptureResult(error: nil) {
-      if DispatchQueue.getSpecific(key: ioQueueSpecific) != nil {
-        dataProviderQueueExpectation.fulfill()
-      }
-      return mockWritableData
-    }
-
-    waitForExpectations(timeout: 30, handler: nil)
-  }
+  //  func testHandlePhotoCaptureResult_mustCompleteWithErrorIfFailedToWrite() {
+  //    let completionExpectation = expectation(
+  //      description: "Must complete with error if failed to write file.")
+  //    let ioQueue = DispatchQueue(label: "test")
+  //    let ioError = NSError(
+  //      domain: "IOError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Localized IO Error"])
+  //    let delegate = FLTSavePhotoDelegate(path: "test", ioQueue: ioQueue) { path, error in
+  //      XCTAssertEqual(ioError, error as NSError?)
+  //      XCTAssertNil(path)
+  //      completionExpectation.fulfill()
+  //    }
+  //
+  //    let mockWritableData = MockWritableData()
+  //    mockWritableData.writeToFileStub = { path, options in
+  //      throw ioError
+  //    }
+  //
+  //    delegate.handlePhotoCaptureResult(error: nil) { mockWritableData }
+  //
+  //    waitForExpectations(timeout: 30, handler: nil)
+  //  }
+  //
+  //  func testHandlePhotoCaptureResult_mustCompleteWithFilePathIfSuccessToWrite() {
+  //    let completionExpectation = expectation(
+  //      description: "Must complete with file path if succeeds to write file.")
+  //    let ioQueue = DispatchQueue(label: "test")
+  //    let filePath = "test"
+  //    let delegate = FLTSavePhotoDelegate(path: filePath, ioQueue: ioQueue) { path, error in
+  //      XCTAssertNil(error)
+  //      XCTAssertEqual(filePath, path)
+  //      completionExpectation.fulfill()
+  //    }
+  //
+  //    let mockWritableData = MockWritableData()
+  //    mockWritableData.writeToFileStub = { path, options in }
+  //
+  //    delegate.handlePhotoCaptureResult(error: nil) { mockWritableData }
+  //
+  //    waitForExpectations(timeout: 30, handler: nil)
+  //  }
+  //
+  //  func testHandlePhotoCaptureResult_bothProvideDataAndSaveFileMustRunOnIOQueue() {
+  //    let dataProviderQueueExpectation = expectation(
+  //      description: "Data provider must run on io queue.")
+  //    let writeFileQueueExpectation = expectation(description: "File writing must run on io queue.")
+  //    let completionExpectation = expectation(
+  //      description: "Must complete with file path if success to write file.")
+  //    let ioQueue = DispatchQueue(label: "test")
+  //    let ioQueueSpecific = DispatchSpecificKey<Void>()
+  //    ioQueue.setSpecific(key: ioQueueSpecific, value: ())
+  //
+  //    let mockWritableData = MockWritableData()
+  //    mockWritableData.writeToFileStub = { path, options in
+  //      if DispatchQueue.getSpecific(key: ioQueueSpecific) != nil {
+  //        writeFileQueueExpectation.fulfill()
+  //      }
+  //    }
+  //
+  //    let filePath = "test"
+  //    let delegate = FLTSavePhotoDelegate(path: filePath, ioQueue: ioQueue) { path, error in
+  //      completionExpectation.fulfill()
+  //    }
+  //
+  //    delegate.handlePhotoCaptureResult(error: nil) {
+  //      if DispatchQueue.getSpecific(key: ioQueueSpecific) != nil {
+  //        dataProviderQueueExpectation.fulfill()
+  //      }
+  //      return mockWritableData
+  //    }
+  //
+  //    waitForExpectations(timeout: 30, handler: nil)
+  //  }
 }

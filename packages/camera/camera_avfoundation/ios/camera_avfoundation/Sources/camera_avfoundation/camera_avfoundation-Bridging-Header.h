@@ -1,0 +1,7 @@
+#import "CameraPlugin_Test.h"
+#import "FLTCamConfiguration.h"
+#import "FLTCameraDeviceDiscovering.h"
+#import "FLTCameraPermissionManager.h"
+#import "FLTCaptureDevice.h"
+#import "QueueUtils.h"
+#import "messages.g.h"

@@ -77,7 +77,7 @@
 #pragma clang diagnostic pop
 
 // Focus
-- (BOOL) isFocusPointOfInterestSupported {
+- (BOOL)isFocusPointOfInterestSupported {
   return self.device.isFocusPointOfInterestSupported;
 }
 
@@ -94,7 +94,7 @@
 }
 
 // Exposure
-- (BOOL) isExposurePointOfInterestSupported {
+- (BOOL)isExposurePointOfInterestSupported {
   return self.device.isExposurePointOfInterestSupported;
 }
 
